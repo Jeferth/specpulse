@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unpkg.com/specpulse/schema/config.schema.json",
+  "title": "specpulse config",
+  "description": "specpulse.config.json (or .specpulse.json) in the project root. Every field is optional.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Dashboard title. Default: package.json name, else the folder name."
+    },
+    "locale": { "enum": ["en", "pt-BR"], "default": "en", "description": "Dashboard language." },
+    "outDir": {
+      "type": "string",
+      "minLength": 1,
+      "default": ".cache/specpulse",
+      "description": "Output folder (index.html, img/, history/). Add it to .gitignore."
+    },
+    "dataFile": {
+      "type": "string",
+      "minLength": 1,
+      "default": "docs/progress.json",
+      "description": "Data file with manual milestone status, milestone → specs and image approval."
+    },
+    "roadmap": {
+      "type": "string",
+      "minLength": 1,
+      "default": "docs/roadmap.md",
+      "description": "Markdown with the phase table: rows starting with | [N](link) | Name | How to test | Focus |."
+    },
+    "phaseFile": {
+      "type": "string",
+      "minLength": 1,
+      "default": "docs/phase-{n}/README.md",
+      "description": "Per-phase markdown with milestone rows | **N.M Name** | Delivery |. {n} = phase number."
+    },
+    "specs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dir": { "type": "string", "minLength": 1, "default": "docs/specs" },
+        "idPattern": {
+          "type": "string",
+          "minLength": 1,
+          "default": "[A-Z]+-\\d{3,}",
+          "description": "Regex for spec IDs: file names start with it, headings are '# <ID> · Title', commits cite it."
+        }
+      }
+    },
+    "gallery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dir"],
+      "description": "Enables the Gallery and Timeline sections.",
+      "properties": {
+        "dir": { "type": "string", "minLength": 1, "description": "Folder with the reference images." },
+        "referenceExt": { "type": "string", "minLength": 1, "default": ".png" },
+        "sceneExt": {
+          "type": "string",
+          "minLength": 1,
+          "description": "When set, each <name><sceneExt> file is a scene; otherwise each reference image is one."
+        },
+        "render": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shell command rendering one scene to PNG. Placeholders: {scene}, {out}, {name}."
+        }
+      }
+    },
+    "timelineLimit": { "type": "integer", "minimum": 1, "default": 30 }
+  }
+}

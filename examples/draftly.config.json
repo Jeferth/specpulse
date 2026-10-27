@@ -1,0 +1,17 @@
+{
+  "$schema": "../schema/config.schema.json",
+  "$comment": "Config for a project laid out like Draftly: Portuguese docs, F-NNNN specs, golden images.",
+  "title": "Draftly",
+  "locale": "pt-BR",
+  "outDir": ".cache/specpulse",
+  "dataFile": "docs/progresso.json",
+  "roadmap": "docs/roadmap.md",
+  "phaseFile": "docs/fase-{n}/README.md",
+  "specs": { "dir": "docs/specs/features", "idPattern": "F-\\d{4}" },
+  "gallery": {
+    "dir": "tests/golden",
+    "sceneExt": ".draftly",
+    "referenceExt": ".png",
+    "render": "pnpm -s draftly render {scene} -o {out}"
+  }
+}

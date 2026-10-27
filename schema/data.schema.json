@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unpkg.com/specpulse/schema/data.schema.json",
+  "title": "specpulse data file",
+  "description": "What cannot be derived from the repo. Keys may be English (milestones/images/source/note/approved) or Portuguese (marcos/goldens/fonte/nota/aprovada).",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "$comment": { "type": "string" },
+    "milestones": { "$ref": "#/$defs/milestones" },
+    "marcos": { "$ref": "#/$defs/milestones" },
+    "images": { "$ref": "#/$defs/images" },
+    "goldens": { "$ref": "#/$defs/images" }
+  },
+  "$defs": {
+    "status": { "enum": ["done", "in progress", "doing", "todo", "feito", "em andamento", "a fazer"] },
+    "milestones": {
+      "type": "object",
+      "description": "Keyed by milestone ID (N.M). Missing milestone = to do.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/$defs/status",
+            "description": "Manual status. Wins over specs."
+          },
+          "specs": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Spec IDs; progress = checked / total acceptance checkboxes."
+          },
+          "source": { "type": "string", "description": "Where the manual status came from." },
+          "fonte": { "type": "string" },
+          "note": { "type": "string" },
+          "nota": { "type": "string" }
+        }
+      }
+    },
+    "images": {
+      "type": "object",
+      "description": "Keyed by gallery scene name.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "approved": { "type": "boolean" },
+          "aprovada": { "type": "boolean" },
+          "note": { "type": "string" },
+          "nota": { "type": "string" }
+        },
+        "anyOf": [{ "required": ["approved"] }, { "required": ["aprovada"] }]
+      }
+    }
+  }
+}
