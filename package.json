@@ -1,0 +1,54 @@
+{
+  "name": "specpulse",
+  "version": "0.0.0",
+  "description": "Local, self-contained progress dashboard for spec-driven projects: phases, milestones, specs, git history and image galleries in one HTML file.",
+  "keywords": [
+    "progress",
+    "dashboard",
+    "specs",
+    "roadmap",
+    "milestones",
+    "spec-driven",
+    "claude-code",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "Leonardo Lima",
+  "type": "module",
+  "bin": {
+    "specpulse": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "schema",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "build": "node scripts/clean.ts && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "check": "biome check . && tsc -p tsconfig.json && vitest run",
+    "dev": "node src/cli.ts",
+    "prepublishOnly": "pnpm run check && pnpm run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.3",
+    "@types/node": "26.6.5",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
+  }
+}
