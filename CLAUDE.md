@@ -67,8 +67,10 @@ publicado precisa de JS. Os fontes importam com `.ts` e o `tsc` reescreve para `
 - TS estrito (`exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`), ESM, só exports nomeados,
   arquivos `kebab-case.ts`, sem `enum`/`namespace`/`class` (exceto adapter com estado),
   complexidade cognitiva ≤ 15. Comentário explica o porquê, não o quê. Código e comentários em inglês.
-- Nomes proibidos em código, arquivos e textos: `pen`, `pendev`, `pencil`, `pencildev`. Não cite
-  caminhos absolutos da máquina do dono em arquivos do repo.
+- Há uma lista de nomes proibidos (o nome antigo do projeto de origem e de uma ferramenta de design
+  concorrente; o dono a tem, é a regra R17 do Draftly). Eles não podem aparecer em código, nomes
+  de arquivo, textos nem no painel; na dúvida sobre um nome, pergunte. Não cite caminhos absolutos
+  da máquina do dono em arquivos do repo.
 - Armadilha conhecida: neste ambiente, heredoc no Git Bash pode comer `\\`. Para arquivos com
   barra invertida (regex em JSON/TS), use a ferramenta de escrita de arquivo, não `cat <<EOF`.
 
