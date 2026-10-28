@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildModel, statusOf } from "./model.ts";
-import { commit, input } from "./testing/fixtures.ts";
+import { commit, criteria, input } from "./testing/fixtures.ts";
 import { buildTimeline, readableStamp, stampOf } from "./timeline.ts";
 
 describe("buildModel", () => {
@@ -41,6 +41,41 @@ describe("buildModel", () => {
     expect(model.specs[1]).toMatchObject({ milestone: "1.1", lastDate: commit.date });
     expect(model.specs[1]?.commits).toHaveLength(1);
     expect(model.specs[0]?.lastDate).toBeUndefined();
+  });
+
+  it("no frontmatter milestones, no warnings", () => {
+    expect(model.warnings).toEqual([]);
+  });
+
+  it("frontmatter milestones add to the data file's lists and conflicts become warnings", () => {
+    const fm = (id: string, milestone: string, done: number) => ({
+      id,
+      title: id,
+      file: `${id}.md`,
+      done,
+      total: 2,
+      criteria: criteria([done > 0, done > 1]),
+      milestone,
+    });
+    const m = buildModel({
+      ...input,
+      // F-0001 is listed under 1.1 in the data file but declares 1.2.
+      specs: [
+        ...input.specs.filter((s) => s.id !== "F-0001"),
+        fm("F-0001", "1.2", 0),
+        fm("F-0003", "1.2", 2),
+      ],
+    });
+    const [m11, m12] = m.phases[1]?.milestones ?? [];
+    expect(m11?.specs).toEqual(["F-0001", "F-0002"]);
+    expect(m12?.specs).toEqual(["F-0001", "F-0003"]);
+    expect(m12?.source).toEqual({ kind: "specs", ids: ["F-0001", "F-0003"], done: 2, total: 4 });
+    expect(m12?.status).toBe("doing");
+    expect(m.specs.find((s) => s.id === "F-0003")?.milestone).toBe("1.2");
+    expect(m.specs.find((s) => s.id === "F-0001")?.milestone).toBe("1.2");
+    expect(m.warnings).toEqual([
+      { kind: "milestone-conflict", spec: "F-0001", frontmatter: "1.2", data: "1.1" },
+    ]);
   });
 
   it("statusOf", () => {

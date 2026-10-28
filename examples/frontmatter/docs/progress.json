@@ -1,0 +1,8 @@
+{
+  "$schema": "../../../schema/data.schema.json",
+  "milestones": {
+    "1.1": { "specs": ["ACC-001"] },
+    "2.2": { "specs": ["BIL-002"], "note": "blocked on the payment provider contract" }
+  },
+  "images": {}
+}

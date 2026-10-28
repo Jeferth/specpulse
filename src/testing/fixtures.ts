@@ -1,6 +1,11 @@
 // Shared test fixtures (not part of the build).
 import type { Commit } from "../git-log.ts";
 import type { ModelInput } from "../model.ts";
+import type { Criterion } from "../spec.ts";
+
+/** Checkbox list with the given states, texts "c1", "c2", … */
+export const criteria = (states: readonly boolean[]): Criterion[] =>
+  states.map((done, i) => ({ text: `c${i + 1}`, done }));
 
 export const commit: Commit = {
   hash: "abc1234",
@@ -26,8 +31,15 @@ export const input: ModelInput = {
     ],
   ]),
   specs: [
-    { id: "F-0002", title: "Op", file: "f2.md", done: 3, total: 3 },
-    { id: "F-0001", title: "Types", file: "f1.md", done: 0, total: 3 },
+    { id: "F-0002", title: "Op", file: "f2.md", done: 3, total: 3, criteria: criteria([true, true, true]) },
+    {
+      id: "F-0001",
+      title: "Types",
+      file: "f1.md",
+      done: 0,
+      total: 3,
+      criteria: criteria([false, false, false]),
+    },
   ],
   commits: [commit],
   data: {

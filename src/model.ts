@@ -45,9 +45,18 @@ export interface ModelInput {
   readonly phaseFile: (n: number) => string;
 }
 
+/** Something the dashboard should point out instead of silently picking a side. */
+export type ModelWarning = {
+  readonly kind: "milestone-conflict";
+  readonly spec: string;
+  readonly frontmatter: string;
+  readonly data: string;
+};
+
 export interface Model {
   readonly phases: readonly PhaseView[];
   readonly specs: readonly SpecView[];
+  readonly warnings: readonly ModelWarning[];
 }
 
 const weight: Record<Status, number> = { done: 1, doing: 0.5, todo: 0 };
@@ -65,7 +74,21 @@ const fromSpecs = (ids: readonly string[], specs: readonly Spec[]) => {
   return { progress, source };
 };
 
-const resolve = (entry: MilestoneEntry | undefined, input: ModelInput) => {
+/** Specs of a milestone: the data file's list plus specs whose frontmatter names it. */
+const specsOfMilestone = (
+  id: string,
+  entry: MilestoneEntry | undefined,
+  specs: readonly Spec[],
+): string[] => {
+  const listed = entry?.specs ?? [];
+  const declared = specs
+    .filter((s) => s.milestone === id && !listed.includes(s.id))
+    .map((s) => s.id)
+    .sort();
+  return [...listed, ...declared];
+};
+
+const resolve = (entry: MilestoneEntry | undefined, ids: readonly string[], input: ModelInput) => {
   if (entry?.status) {
     const source: Source = {
       kind: "manual",
@@ -74,8 +97,8 @@ const resolve = (entry: MilestoneEntry | undefined, input: ModelInput) => {
     };
     return { progress: weight[entry.status], status: entry.status, source };
   }
-  if (entry?.specs?.length) {
-    const r = fromSpecs(entry.specs, input.specs);
+  if (ids.length) {
+    const r = fromSpecs(ids, input.specs);
     return { ...r, status: statusOf(r.progress) };
   }
   const source: Source = { kind: "none", file: input.dataFile };
@@ -84,10 +107,11 @@ const resolve = (entry: MilestoneEntry | undefined, input: ModelInput) => {
 
 export const milestoneView = (m: Milestone, input: ModelInput): MilestoneView => {
   const entry = input.data.milestones[m.id];
+  const specs = specsOfMilestone(m.id, entry, input.specs);
   return {
     ...m,
-    ...resolve(entry, input),
-    specs: entry?.specs ?? [],
+    ...resolve(entry, specs, input),
+    specs,
     ...(entry?.note ? { note: entry.note } : {}),
   };
 };
@@ -112,12 +136,31 @@ const milestoneOfSpec = (id: string, data: DataFile): string | undefined =>
 
 const specView = (s: Spec, input: ModelInput): SpecView => {
   const commits = commitsFor(s.id, input.commits);
-  const milestone = milestoneOfSpec(s.id, input.data);
+  // The spec's own declaration wins for display; disagreements surface as warnings.
+  const milestone = s.milestone ?? milestoneOfSpec(s.id, input.data);
   const lastDate = commits[0]?.date;
   return { ...s, commits, ...(milestone ? { milestone } : {}), ...(lastDate ? { lastDate } : {}) };
 };
 
+/** A spec whose frontmatter names one milestone while the data file lists it under another. */
+export const milestoneWarnings = (specs: readonly Spec[], data: DataFile): ModelWarning[] =>
+  [...specs]
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .flatMap((s) => {
+      const declared = s.milestone;
+      if (declared === undefined) return [];
+      return Object.entries(data.milestones)
+        .filter(([id, e]) => id !== declared && e.specs?.includes(s.id))
+        .map(([id]) => ({
+          kind: "milestone-conflict" as const,
+          spec: s.id,
+          frontmatter: declared,
+          data: id,
+        }));
+    });
+
 export const buildModel = (input: ModelInput): Model => ({
   phases: input.phases.map((p) => phaseView(p, input)),
   specs: [...input.specs].sort((a, b) => a.id.localeCompare(b.id)).map((s) => specView(s, input)),
+  warnings: milestoneWarnings(input.specs, input.data),
 });

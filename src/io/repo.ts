@@ -7,7 +7,8 @@ import { EMPTY_DATA, parseDataFile } from "../data-file.ts";
 import { type Commit, GIT_LOG_FORMAT, isClean, parseGitLog } from "../git-log.ts";
 import type { ModelInput } from "../model.ts";
 import { type Milestone, parseMilestones, parseRoadmap } from "../roadmap.ts";
-import { isSpecFile, parseSpec, type Spec } from "../spec.ts";
+import type { Spec } from "../spec.ts";
+import { isSpecCandidate, readSpec } from "../spec-adapters.ts";
 
 const read = (root: string, rel: string): string => readFileSync(join(root, rel), "utf8");
 const readIfExists = (root: string, rel: string): string | undefined =>
@@ -20,11 +21,11 @@ export const git = (root: string, args: readonly string[]): string | undefined =
 };
 
 const readSpecs = (root: string, config: Config): Spec[] => {
-  const { dir, idPattern } = config.specs;
+  const { dir } = config.specs;
   if (!existsSync(join(root, dir))) return [];
   return readdirSync(join(root, dir))
-    .filter((f) => isSpecFile(f, idPattern))
-    .map((f) => parseSpec(read(root, `${dir}/${f}`), `${dir}/${f}`, idPattern))
+    .filter((f) => isSpecCandidate(f, config.specs))
+    .map((f) => readSpec(read(root, `${dir}/${f}`), `${dir}/${f}`, config.specs))
     .filter((s) => s !== undefined);
 };
 
