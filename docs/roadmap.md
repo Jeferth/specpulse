@@ -22,6 +22,7 @@ Todas as specs foram implementadas. O que ainda depende do dono está em "Pendê
 | [S-008](specs/S-008-adaptadores-de-spec.md) Adaptadores de spec          | feito                                                        |
 | [S-009](specs/S-009-specpulse-init.md) `specpulse init`                  | feito                                                        |
 | [S-007](specs/S-007-migracao-do-draftly.md) Migração do Draftly          | roteiro e teste prontos; falta a revisão do dono             |
+| [S-010](specs/S-010-specs-em-pasta.md) Specs em pasta                    | feito (spec-kit, Kiro, OpenSpec)                             |
 | [S-006](specs/S-006-pronto-para-publicar.md) Pronto para publicar        | `0.1.0` publicada no npm; falta repositório e actionlint     |
 
 ## Pendências (dono)

@@ -8,6 +8,15 @@ versions may change the CLI, the config format and the data file format.
 
 ## [Unreleased]
 
+### Added
+
+- `specs.format: "folder"`: one folder per spec, as written by spec-kit (`specs/001-name/`), Kiro
+  (`.kiro/specs/<name>/`) and OpenSpec (`openspec/changes/<id>/`). The folder name is the ID,
+  the title comes from `spec.md`/`requirements.md`/`proposal.md`/`README.md`, the criteria from
+  `tasks.md` (grouped by `##` heading on the spec page), and commits cite the folder name.
+- `specpulse init` detects these three layouts.
+- New Guide section and README section "spec-kit, Kiro and OpenSpec"; `examples/spec-kit/`.
+
 ## [0.1.0] - 2026-10-28
 
 ### Added
