@@ -5,7 +5,7 @@ import { createInterface } from "node:readline";
 import type { Config } from "../config.ts";
 import { generate } from "../generate.ts";
 import { loadConfig } from "../io/load-config.ts";
-import { readCommits, readModelInput } from "../io/repo.ts";
+import { commitIdPattern, readCommits, readModelInput } from "../io/repo.ts";
 import { packageVersion } from "../io/version.ts";
 import { MCP_USAGE, parseMcpArgs } from "../mcp/args.ts";
 import { handleLine } from "../mcp/protocol.ts";
@@ -17,7 +17,7 @@ export const projectWorkspace = (root: string, config: Config): Workspace => {
   const dataPath = resolve(root, config.dataFile);
   return {
     dataFile: config.dataFile,
-    model: () => buildModel(readModelInput(root, config, readCommits(root, config.specs.idPattern))),
+    model: () => buildModel(readModelInput(root, config, readCommits(root, commitIdPattern(root, config)))),
     readData: () => (existsSync(dataPath) ? readFileSync(dataPath, "utf8") : undefined),
     writeData: (text) => {
       mkdirSync(dirname(dataPath), { recursive: true });

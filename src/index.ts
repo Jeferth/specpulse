@@ -127,6 +127,16 @@ export {
   type SpecAdapter,
 } from "./spec.ts";
 export { adapterFor, isSpecCandidate, readSpec, SPEC_ADAPTERS } from "./spec-adapters.ts";
+export {
+  FOLDER_FILES,
+  type FolderFile,
+  folderIdPattern,
+  folderSpec,
+  folderTitle,
+  groupedCriteria,
+  TASKS_FILE,
+  TITLE_FILES,
+} from "./spec-folder.ts";
 export { frontmatterAdapter, SPEC_STATUS_ALIASES, statusFromText } from "./spec-frontmatter.ts";
 export {
   buildSummary,

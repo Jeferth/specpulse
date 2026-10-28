@@ -62,9 +62,9 @@
           "description": "Regex for spec IDs: file names start with it, headings are '# <ID> · Title', commits cite it."
         },
         "format": {
-          "enum": ["markdown", "frontmatter", "auto"],
+          "enum": ["markdown", "frontmatter", "auto", "folder"],
           "default": "markdown",
-          "description": "markdown: \"# <ID> · Title\" + checkboxes, file name starts with the ID. frontmatter: YAML block with id/title/status/milestone. auto: per file, frontmatter when the file starts with a closed --- block, otherwise markdown."
+          "description": "markdown: \"# <ID> · Title\" + checkboxes, file name starts with the ID. frontmatter: YAML block with id/title/status/milestone. auto: per file, frontmatter when the file starts with a closed --- block, otherwise markdown. folder: one subfolder per spec (spec-kit specs/001-name/, Kiro .kiro/specs/<name>/, OpenSpec openspec/changes/<id>/); the folder name is the ID and commits cite it, the title comes from spec.md, requirements.md, proposal.md or README.md and the criteria from tasks.md."
         },
         "acceptanceHeading": {
           "type": "string",
@@ -73,7 +73,7 @@
         },
         "idFrom": {
           "enum": ["heading", "filename", "frontmatter"],
-          "description": "Where the spec ID comes from. When set, only this source is used; with filename the file name must start with the ID. Default: heading for markdown; id, then heading, then file name for frontmatter."
+          "description": "Where the spec ID comes from (not used by the folder format). When set, only this source is used; with filename the file name must start with the ID. Default: heading for markdown; id, then heading, then file name for frontmatter."
         }
       }
     },

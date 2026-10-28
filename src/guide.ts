@@ -94,6 +94,23 @@ milestone: "2.1"
     "idFrom": "frontmatter"
   }
 }`,
+  folderTree: `specs/                            spec-kit (Kiro: .kiro/specs/, OpenSpec: openspec/changes/)
+  001-photo-albums/
+    spec.md       title: "# Feature Specification: Photo Albums"
+    plan.md       not read
+    tasks.md      "## Phase 1: Setup" + "- [X] T001 Create project structure"
+  002-album-sharing/
+    spec.md
+    tasks.md`,
+  folderConfig: `{
+  "specs": { "dir": "specs", "format": "folder" }
+}`,
+  folderData: `{
+  "milestones": {
+    "1.1": { "specs": ["001-photo-albums"] },
+    "1.2": { "specs": ["002-album-sharing"] }
+  }
+}`,
   commands: `specpulse                      build the dashboard (.cache/specpulse/index.html)
 specpulse --open               ...and open it in the browser
 specpulse --serve [--port N]   serve on http://localhost:4870 with live updates
@@ -263,12 +280,36 @@ const en: readonly GuideSection[] = [
       { code: CODE.frontmatter, label: "docs/specs/export-pdf.md" },
       {
         list: [
-          "`format`: `markdown` (default), `frontmatter`, or `auto` (per file).",
+          "`format`: `markdown` (default), `frontmatter`, `auto` (per file) or `folder` (one folder per spec, see the next section).",
           "`acceptanceHeading`: only checkboxes under this heading count.",
           "`idFrom`: `heading`, `filename` or `frontmatter`.",
         ],
       },
       { code: CODE.formats, label: "specpulse.config.json" },
+    ],
+  },
+  {
+    id: "folders",
+    title: "spec-kit, Kiro and OpenSpec",
+    blocks: [
+      {
+        p: "Tools that keep **one folder per spec** work as they are: spec-kit (`specs/001-name/`), Kiro (`.kiro/specs/<name>/`) and OpenSpec (`openspec/changes/<id>/`). specpulse reads the checkboxes those tools already tick in `tasks.md`; `specpulse init` detects the three layouts and writes the config.",
+      },
+      { code: CODE.folderTree },
+      { code: CODE.folderConfig, label: "specpulse.config.json" },
+      {
+        list: [
+          "**ID**: the folder name (`001-photo-albums`). Use it in the data file and in commits.",
+          "**Title**: first heading of `spec.md`, `requirements.md`, `proposal.md` or `README.md`, without the `Feature Specification:` prefix; generic headings fall back to the folder name.",
+          "**Criteria**: every checkbox in `tasks.md` (`[x]` or `[X]`), or in the title file while there is no `tasks.md`. Each `##` heading (a spec-kit phase) becomes a group on the spec page.",
+          "**Commits** that contain the folder name as a whole word are linked to the spec, e.g. the merge of the `001-photo-albums` branch.",
+          "`dir`: `specs` for spec-kit, `.kiro/specs` for Kiro, `openspec/changes` for OpenSpec.",
+        ],
+      },
+      {
+        p: "Milestones still come from the roadmap and phase files; the data file maps them to spec folders:",
+      },
+      { code: CODE.folderData, label: "docs/progress.json" },
     ],
   },
   {
@@ -466,12 +507,36 @@ const ptBR: readonly GuideSection[] = [
       { code: CODE.frontmatter, label: "docs/specs/export-pdf.md" },
       {
         list: [
-          "`format`: `markdown` (padrão), `frontmatter` ou `auto` (por arquivo).",
+          "`format`: `markdown` (padrão), `frontmatter`, `auto` (por arquivo) ou `folder` (uma pasta por spec, veja a próxima seção).",
           "`acceptanceHeading`: só contam os checkboxes abaixo deste título.",
           "`idFrom`: `heading`, `filename` ou `frontmatter`.",
         ],
       },
       { code: CODE.formats, label: "specpulse.config.json" },
+    ],
+  },
+  {
+    id: "folders",
+    title: "spec-kit, Kiro e OpenSpec",
+    blocks: [
+      {
+        p: "Ferramentas que guardam **uma pasta por spec** funcionam como estão: spec-kit (`specs/001-nome/`), Kiro (`.kiro/specs/<nome>/`) e OpenSpec (`openspec/changes/<id>/`). O specpulse lê os checkboxes que essas ferramentas já marcam no `tasks.md`; o `specpulse init` detecta os três layouts e grava a config.",
+      },
+      { code: CODE.folderTree },
+      { code: CODE.folderConfig, label: "specpulse.config.json" },
+      {
+        list: [
+          "**ID**: o nome da pasta (`001-photo-albums`). Use-o no arquivo de dados e nos commits.",
+          "**Título**: primeiro título de `spec.md`, `requirements.md`, `proposal.md` ou `README.md`, sem o prefixo `Feature Specification:`; títulos genéricos dão lugar ao nome da pasta.",
+          "**Critérios**: todos os checkboxes do `tasks.md` (`[x]` ou `[X]`), ou do arquivo de título enquanto não houver `tasks.md`. Cada título `##` (uma fase do spec-kit) vira um grupo na página da spec.",
+          "**Commits** que contêm o nome da pasta como palavra inteira ficam ligados à spec, por exemplo o merge da branch `001-photo-albums`.",
+          "`dir`: `specs` para o spec-kit, `.kiro/specs` para o Kiro, `openspec/changes` para o OpenSpec.",
+        ],
+      },
+      {
+        p: "Os marcos continuam vindo do roadmap e dos arquivos de fase; o arquivo de dados os liga às pastas de spec:",
+      },
+      { code: CODE.folderData, label: "docs/progress.json" },
     ],
   },
   {
@@ -669,12 +734,36 @@ const es: readonly GuideSection[] = [
       { code: CODE.frontmatter, label: "docs/specs/export-pdf.md" },
       {
         list: [
-          "`format`: `markdown` (por defecto), `frontmatter` o `auto` (por archivo).",
+          "`format`: `markdown` (por defecto), `frontmatter`, `auto` (por archivo) o `folder` (una carpeta por spec, ver la sección siguiente).",
           "`acceptanceHeading`: solo cuentan las casillas bajo este título.",
           "`idFrom`: `heading`, `filename` o `frontmatter`.",
         ],
       },
       { code: CODE.formats, label: "specpulse.config.json" },
+    ],
+  },
+  {
+    id: "folders",
+    title: "spec-kit, Kiro y OpenSpec",
+    blocks: [
+      {
+        p: "Las herramientas que guardan **una carpeta por spec** funcionan tal cual: spec-kit (`specs/001-nombre/`), Kiro (`.kiro/specs/<nombre>/`) y OpenSpec (`openspec/changes/<id>/`). specpulse lee las casillas que esas herramientas ya marcan en `tasks.md`; `specpulse init` detecta los tres layouts y escribe la config.",
+      },
+      { code: CODE.folderTree },
+      { code: CODE.folderConfig, label: "specpulse.config.json" },
+      {
+        list: [
+          "**ID**: el nombre de la carpeta (`001-photo-albums`). Úsalo en el archivo de datos y en los commits.",
+          "**Título**: primer título de `spec.md`, `requirements.md`, `proposal.md` o `README.md`, sin el prefijo `Feature Specification:`; los títulos genéricos dan paso al nombre de la carpeta.",
+          "**Criterios**: todas las casillas de `tasks.md` (`[x]` o `[X]`), o del archivo de título mientras no exista `tasks.md`. Cada título `##` (una fase de spec-kit) se convierte en un grupo en la página de la spec.",
+          "Los **commits** que contienen el nombre de la carpeta como palabra completa quedan vinculados a la spec, por ejemplo el merge de la rama `001-photo-albums`.",
+          "`dir`: `specs` para spec-kit, `.kiro/specs` para Kiro, `openspec/changes` para OpenSpec.",
+        ],
+      },
+      {
+        p: "Los hitos siguen saliendo del roadmap y de los archivos de fase; el archivo de datos los vincula a las carpetas de spec:",
+      },
+      { code: CODE.folderData, label: "docs/progress.json" },
     ],
   },
   {

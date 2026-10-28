@@ -9,6 +9,7 @@ import type { ModelInput } from "../model.ts";
 import { type Milestone, parseMilestones, parseRoadmap } from "../roadmap.ts";
 import type { Spec } from "../spec.ts";
 import { isSpecCandidate, readSpec } from "../spec-adapters.ts";
+import { FOLDER_FILES, type FolderFile, folderIdPattern, folderSpec } from "../spec-folder.ts";
 
 const read = (root: string, rel: string): string => readFileSync(join(root, rel), "utf8");
 const readIfExists = (root: string, rel: string): string | undefined =>
@@ -20,9 +21,23 @@ export const git = (root: string, args: readonly string[]): string | undefined =
   return r.status === 0 ? r.stdout : undefined;
 };
 
+const specFolders = (root: string, dir: string): string[] =>
+  readdirSync(join(root, dir), { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name);
+
+const folderFiles = (root: string, rel: string): FolderFile[] =>
+  readdirSync(join(root, rel), { withFileTypes: true })
+    .filter((e) => e.isFile() && FOLDER_FILES.includes(e.name.toLowerCase()))
+    .map((e) => ({ name: e.name, text: read(root, `${rel}/${e.name}`) }));
+
 const readSpecs = (root: string, config: Config): Spec[] => {
   const { dir } = config.specs;
   if (!existsSync(join(root, dir))) return [];
+  if (config.specs.format === "folder")
+    return specFolders(root, dir)
+      .map((name) => folderSpec(name, dir, folderFiles(root, `${dir}/${name}`), config.specs))
+      .filter((s) => s !== undefined);
   return readdirSync(join(root, dir))
     .filter((f) => isSpecCandidate(f, config.specs))
     .map((f) => readSpec(read(root, `${dir}/${f}`), `${dir}/${f}`, config.specs))
@@ -47,6 +62,16 @@ export const readModelInput = (root: string, config: Config, commits: readonly C
     dataFile: config.dataFile,
     phaseFile: (n) => phasePath(config, n),
   };
+};
+
+/**
+ * The regex that finds spec IDs in commit messages. Folder specs are named freely, so their
+ * pattern is built from the folder names that exist right now instead of `specs.idPattern`.
+ */
+export const commitIdPattern = (root: string, config: Config): string => {
+  const { dir, format, idPattern } = config.specs;
+  if (format !== "folder") return idPattern;
+  return folderIdPattern(existsSync(join(root, dir)) ? readSpecs(root, config).map((s) => s.id) : []);
 };
 
 export const readCommits = (root: string, idPattern: string): Commit[] =>

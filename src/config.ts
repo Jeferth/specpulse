@@ -21,18 +21,21 @@ export interface GalleryConfig {
   readonly render?: string;
 }
 
-export const SPEC_FORMATS = ["markdown", "frontmatter", "auto"] as const;
+export const SPEC_FORMATS = ["markdown", "frontmatter", "auto", "folder"] as const;
 export type SpecFormat = (typeof SPEC_FORMATS)[number];
 
 export const ID_SOURCES = ["heading", "filename", "frontmatter"] as const;
 export type IdSource = (typeof ID_SOURCES)[number];
 
 export interface SpecsConfig {
-  /** Folder with one markdown file per spec. */
+  /** Folder with one markdown file per spec (or, with format "folder", one subfolder per spec). */
   readonly dir: string;
   /** Regex (no slashes) for spec IDs, used for headings, file names and commit messages. */
   readonly idPattern: string;
-  /** How spec files are read; "auto" tries frontmatter first, then plain markdown. */
+  /**
+   * How spec files are read; "auto" tries frontmatter first, then plain markdown; "folder" reads one
+   * subfolder per spec (spec-kit, Kiro, OpenSpec).
+   */
   readonly format: SpecFormat;
   /** When set, only checkboxes under this heading count as acceptance criteria. */
   readonly acceptanceHeading?: string;

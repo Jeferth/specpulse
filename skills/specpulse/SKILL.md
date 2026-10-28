@@ -64,7 +64,9 @@ keep that file in sync with the work, in the same commit as the change it reflec
 ## When to do what
 
 - **Finished a spec criterion**: tick `- [x]` in the spec file. If the spec is not yet listed in
-  its milestone's `specs`, add it.
+  its milestone's `specs`, add it. With `specs.format: "folder"` (spec-kit, Kiro, OpenSpec) the
+  spec is a folder, its ID is the folder name and the criteria are the checkboxes in its
+  `tasks.md`; tick them there, as those tools already do.
 - **Created a new spec for a milestone**: add its ID to that milestone's `specs`.
 - **Completed a milestone that has no specs**: set `status` and `source`.
 - **Image looks wrong after a change**: set `approved: false` with a `note`; do not approve.

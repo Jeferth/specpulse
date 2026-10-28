@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 import { parseArgs, USAGE } from "../args.ts";
 import { generate } from "../generate.ts";
 import { loadConfig } from "../io/load-config.ts";
-import { readCommits, readModelInput } from "../io/repo.ts";
+import { commitIdPattern, readCommits, readModelInput } from "../io/repo.ts";
 import { openInBrowser, serveLive } from "../io/serve.ts";
 import { packageVersion } from "../io/version.ts";
 import { buildModel } from "../model.ts";
@@ -17,7 +17,7 @@ export const runGenerate = (argv: readonly string[]): void => {
   const root = resolve(args.cwd ?? ".");
   const { config } = loadConfig(root, args.config);
   if (args.summary) {
-    const commits = readCommits(root, config.specs.idPattern);
+    const commits = readCommits(root, commitIdPattern(root, config));
     return void process.stdout.write(summaryText(buildModel(readModelInput(root, config, commits))));
   }
   const { index, page } = generate({ root, config, render: args.render });

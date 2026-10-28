@@ -9,6 +9,7 @@ import type { GalleryItem, Page } from "./html.ts";
 import type { MessageKey, Messages } from "./i18n.ts";
 import type { LiveState, SessionView } from "./live.ts";
 import type { MilestoneView, ModelWarning, PhaseView, Source, SpecView } from "./model.ts";
+import type { Criterion } from "./spec.ts";
 import type { Snapshot } from "./timeline.ts";
 
 export const VIEWS = ["overview", "phases", "specs", "gallery", "timeline", "live", "guide"] as const;
@@ -419,6 +420,31 @@ const commitItems = (commits: readonly Commit[]): string =>
     )
     .join("")}</ul>`;
 
+const criterionItem = (c: Criterion): string =>
+  `<li class="${c.done ? "ok" : ""}"><span aria-hidden="true">${c.done ? "☑" : "☐"}</span> ${inlineMd(c.text)}</li>`;
+
+/** Flat list, or one list per `##` group (spec-kit phases) when the spec has groups. */
+export const criteriaList = (criteria: readonly Criterion[]): string => {
+  if (!criteria.some((c) => c.group))
+    return `<ul class="criteria">${criteria.map(criterionItem).join("")}</ul>`;
+  const groups: { name: string; items: Criterion[] }[] = [];
+  for (const c of criteria) {
+    const name = c.group ?? "";
+    const last = groups.at(-1);
+    if (last && last.name === name) last.items.push(c);
+    else groups.push({ name, items: [c] });
+  }
+  return groups
+    .map((g) => {
+      const done = g.items.filter((c) => c.done).length;
+      const head = g.name
+        ? `<h3 class="cgroup">${inlineMd(g.name)} <small>${done}/${g.items.length}</small></h3>`
+        : "";
+      return `${head}<ul class="criteria">${g.items.map(criterionItem).join("")}</ul>`;
+    })
+    .join("");
+};
+
 const specDetail = (ctx: Ctx, id: string): string => {
   const s = ctx.page.model.specs.find((x) => x.id === id);
   const back = `<p><a href="${hrefOf("specs")}">${tx(ctx, "allSpecs")}</a></p>`;
@@ -427,14 +453,7 @@ const specDetail = (ctx: Ctx, id: string): string => {
   const milestone = s.milestone
     ? ` · ${tx(ctx, "thMilestone")} <a href="${hrefOf("phases", s.milestone.split(".")[0] ?? "")}">${esc(s.milestone)}</a>`
     : "";
-  const criteria = s.criteria.length
-    ? `<ul class="criteria">${s.criteria
-        .map(
-          (c) =>
-            `<li class="${c.done ? "ok" : ""}"><span aria-hidden="true">${c.done ? "☑" : "☐"}</span> ${inlineMd(c.text)}</li>`,
-        )
-        .join("")}</ul>`
-    : empty(tx(ctx, "noCriteria"));
+  const criteria = s.criteria.length ? criteriaList(s.criteria) : empty(tx(ctx, "noCriteria"));
   const commits = s.commits.length ? commitItems(s.commits) : empty(tx(ctx, "none"));
   return `${back}<div class="detail"><div class="dhead"><div><h1><span class="id">${esc(s.id)}</span> ${esc(s.title)}</h1>
 <p class="sub">${tx(ctx, "specFile")} <code>${esc(s.file)}</code>${milestone}</p></div>${pill(ctx, status)}</div>

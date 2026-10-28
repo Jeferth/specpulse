@@ -104,6 +104,7 @@ display:inline-block;margin-top:4px}
 .criteria{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .criteria li{padding:6px 10px;border-radius:8px;background:var(--soft)}
 .criteria li.ok{color:var(--muted)}.criteria li.ok span{color:var(--done)}
+.cgroup{font-size:.95rem;margin:14px 0 6px}.cgroup small{color:var(--muted);font-weight:400}
 .commits{margin:0;padding-left:18px;display:grid;gap:4px}
 .filters{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:10px}
 .filters input{min-width:220px;flex:1 1 220px}

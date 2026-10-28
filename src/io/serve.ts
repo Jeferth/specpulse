@@ -16,6 +16,7 @@ import { isRelevant, watchedPaths } from "../watch-paths.ts";
 import { createCheckRunner } from "./check.ts";
 import { clientScript } from "./client-script.ts";
 import { collectLive } from "./live-state.ts";
+import { commitIdPattern } from "./repo.ts";
 import { watchProject } from "./watch.ts";
 
 const TYPES: Record<string, string> = {
@@ -100,7 +101,7 @@ export const serveLive = (o: LiveServerOptions): LiveServer => {
     const next = collectLive(
       {
         root,
-        idPattern: config.specs.idPattern,
+        idPattern: commitIdPattern(root, config),
         commits: config.live.commits,
         claudeSessions: o.claudeSessions,
         home,

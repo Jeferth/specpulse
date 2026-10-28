@@ -10,7 +10,9 @@ account and no network: the page has no external assets and works from `file://`
 
 It fits any JavaScript project, frontend or backend, app, library or monorepo: it only reads
 markdown, JSON and git, never imports your code and has **zero runtime dependencies**. Nothing in
-your build, framework or tooling changes.
+your build, framework or tooling changes. Already using
+[spec-kit](https://github.com/github/spec-kit), Kiro or OpenSpec? specpulse reads their spec
+folders as they are ([details](#spec-kit-kiro-and-openspec)).
 
 ![specpulse dashboard for the basic example](https://cdn.jsdelivr.net/npm/specpulse/docs/assets/screenshot.png)
 
@@ -63,6 +65,9 @@ starting config:
   `docs/specs/features`, `specs`, …);
 - infers the spec ID pattern from file names (`F-0001-*.md` → `F-\d{4}`, `APP-001-*.md` →
   `APP-\d{3}`, several prefixes → `[A-Z]+-\d{3,}`) and detects frontmatter specs;
+- recognizes one-folder-per-spec layouts from [spec-kit](https://github.com/github/spec-kit)
+  (`specs/001-name/`), Kiro (`.kiro/specs/<name>/`) and OpenSpec (`openspec/changes/<id>/`), see
+  [Spec-kit, Kiro and OpenSpec](#spec-kit-kiro-and-openspec);
 - writes `specpulse.config.json` with **only the settings that differ from the defaults**, plus an
   empty data file (`docs/progress.json`, or `progresso.json`/`progreso.json` for `pt-BR`/`es`) if
   there is none.
@@ -186,29 +191,29 @@ feeds the timeline.
 }
 ```
 
-| Field                     | Default                    | Meaning                                                                    |
-| ------------------------- | -------------------------- | -------------------------------------------------------------------------- |
-| `title`                   | `package.json` name        | Dashboard title.                                                           |
-| `locale`                  | `en`                       | `en`, `pt-BR` or `es` (viewers can switch in the header).                  |
-| `outDir`                  | `.cache/specpulse`         | Output folder.                                                             |
-| `dataFile`                | `docs/progress.json`       | Data file (below).                                                         |
-| `roadmap`                 | `docs/roadmap.md`          | Phase table.                                                               |
-| `phaseFile`               | `docs/phase-{n}/README.md` | Milestone table per phase; `{n}` is the phase number.                      |
-| `specs.dir`               | `docs/specs`               | Spec folder.                                                               |
-| `specs.idPattern`         | `[A-Z]+-\d{3,}`            | Regex for spec IDs.                                                        |
-| `specs.format`            | `markdown`                 | `markdown`, `frontmatter` or `auto` ([Spec formats](#spec-formats)).       |
-| `specs.acceptanceHeading` | none                       | Only checkboxes under this heading count.                                  |
-| `specs.idFrom`            | per format                 | `heading`, `filename` or `frontmatter`.                                    |
-| `gallery`                 | off                        | Enables the gallery and timeline.                                          |
-| `gallery.dir`             | required                   | Reference image folder.                                                    |
-| `gallery.referenceExt`    | `.png`                     | Reference image extension.                                                 |
-| `gallery.sceneExt`        | none                       | When set, each `<name><sceneExt>` is a scene; otherwise each image is one. |
-| `gallery.render`          | none                       | Shell command; placeholders `{scene}`, `{out}`, `{name}`.                  |
-| `timelineLimit`           | `30`                       | Snapshots shown in the timeline.                                           |
-| `live.check`              | none                       | Command behind the Live view's "Run check" button.                         |
-| `live.checkOnChange`      | `false`                    | Also run the check after changes (debounced, never in parallel).           |
-| `live.claudeSessions`     | `false`                    | Opt-in for Claude Code session metadata in the Live view.                  |
-| `live.commits`            | `30`                       | Commits in the Live feed.                                                  |
+| Field                     | Default                    | Meaning                                                                        |
+| ------------------------- | -------------------------- | ------------------------------------------------------------------------------ |
+| `title`                   | `package.json` name        | Dashboard title.                                                               |
+| `locale`                  | `en`                       | `en`, `pt-BR` or `es` (viewers can switch in the header).                      |
+| `outDir`                  | `.cache/specpulse`         | Output folder.                                                                 |
+| `dataFile`                | `docs/progress.json`       | Data file (below).                                                             |
+| `roadmap`                 | `docs/roadmap.md`          | Phase table.                                                                   |
+| `phaseFile`               | `docs/phase-{n}/README.md` | Milestone table per phase; `{n}` is the phase number.                          |
+| `specs.dir`               | `docs/specs`               | Spec folder.                                                                   |
+| `specs.idPattern`         | `[A-Z]+-\d{3,}`            | Regex for spec IDs.                                                            |
+| `specs.format`            | `markdown`                 | `markdown`, `frontmatter`, `auto` or `folder` ([Spec formats](#spec-formats)). |
+| `specs.acceptanceHeading` | none                       | Only checkboxes under this heading count.                                      |
+| `specs.idFrom`            | per format                 | `heading`, `filename` or `frontmatter`.                                        |
+| `gallery`                 | off                        | Enables the gallery and timeline.                                              |
+| `gallery.dir`             | required                   | Reference image folder.                                                        |
+| `gallery.referenceExt`    | `.png`                     | Reference image extension.                                                     |
+| `gallery.sceneExt`        | none                       | When set, each `<name><sceneExt>` is a scene; otherwise each image is one.     |
+| `gallery.render`          | none                       | Shell command; placeholders `{scene}`, `{out}`, `{name}`.                      |
+| `timelineLimit`           | `30`                       | Snapshots shown in the timeline.                                               |
+| `live.check`              | none                       | Command behind the Live view's "Run check" button.                             |
+| `live.checkOnChange`      | `false`                    | Also run the check after changes (debounced, never in parallel).               |
+| `live.claudeSessions`     | `false`                    | Opt-in for Claude Code session metadata in the Live view.                      |
+| `live.commits`            | `30`                       | Commits in the Live feed.                                                      |
 
 Unknown keys are rejected, so typos fail loudly.
 
@@ -263,6 +268,8 @@ Keep it current: when a spec or milestone is done, update the file in the same c
   without a closed `---` block is read as plain markdown, and lines that can't be parsed are
   skipped.
 - `"auto"`: picks per file, so both styles can live in one folder.
+- `"folder"`: one subfolder per spec, as written by spec-kit, Kiro and OpenSpec. See the next
+  section.
 
 `specs.acceptanceHeading` (e.g. `"Acceptance"`) counts only the checkboxes under that heading and
 its subsections (case and a trailing colon are ignored). `specs.idFrom` (`"heading"`,
@@ -272,6 +279,44 @@ A `milestone` in frontmatter links the spec to that milestone without listing it
 `milestones.<id>.specs` in the data file; the two sources are combined. If the data file lists the
 spec under a different milestone, the dashboard shows a warning. See
 [`examples/frontmatter`](examples/frontmatter) for a project that mixes both formats.
+
+### Spec-kit, Kiro and OpenSpec
+
+Tools that keep one folder per spec work as they are, with no conversion: specpulse reads the
+checkboxes those tools already tick in `tasks.md`.
+
+| Tool                                           | Layout                                                 | Config                                                       |
+| ---------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
+| [spec-kit](https://github.com/github/spec-kit) | `specs/001-photo-albums/{spec,plan,tasks}.md`          | `"specs": { "dir": "specs", "format": "folder" }`            |
+| Kiro                                           | `.kiro/specs/user-auth/{requirements,design,tasks}.md` | `"specs": { "dir": ".kiro/specs", "format": "folder" }`      |
+| OpenSpec                                       | `openspec/changes/add-2fa/{proposal,tasks}.md`         | `"specs": { "dir": "openspec/changes", "format": "folder" }` |
+
+`specpulse init` detects all three and writes that config for you. With `"format": "folder"`:
+
+- **ID** = the folder name (`001-photo-albums`, `user-auth`). Use it in the data file
+  (`"1.1": { "specs": ["001-photo-albums"] }`) and in commits.
+- **Title** = the first heading of `spec.md`, `requirements.md`, `proposal.md` or `README.md`,
+  without a `Feature Specification:` / `Change:` prefix. Generic headings such as
+  `Requirements Document` fall back to the folder name (`user-auth` → `User auth`).
+- **Criteria** = every checkbox in `tasks.md` (`[x]` and `[X]`, nested ones too), or in the title
+  file when there is no `tasks.md` yet. `specs.acceptanceHeading` still applies.
+- **Groups**: the `##` heading above each task (a spec-kit phase like
+  `Phase 3: User Story 1 …`, an OpenSpec group like `1. Implementation`) groups the criteria on
+  the spec page, each with its own count.
+- **Commits** cite a spec when they contain the folder name as a whole word, so the merge of the
+  spec-kit branch `001-photo-albums` is linked automatically. `specs.idPattern` is not used for
+  commits in this format.
+- `plan.md`, `design.md`, the constitution and loose files in `specs.dir` are not read; a folder
+  without any of the files above (OpenSpec's `archive/`) is skipped.
+
+```json
+{
+  "specs": { "dir": "specs", "format": "folder" }
+}
+```
+
+See [`examples/spec-kit`](examples/spec-kit). Milestones still come from your roadmap and phase
+files; the data file maps each milestone to its spec folders.
 
 ## Live mode
 

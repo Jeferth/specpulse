@@ -5,6 +5,8 @@ export interface Criterion {
   /** The checkbox line without the `- [ ]` prefix, trimmed. */
   readonly text: string;
   readonly done: boolean;
+  /** The `##` heading the checkbox sits under (folder specs only, e.g. a spec-kit phase). */
+  readonly group?: string;
 }
 
 export interface Spec {
@@ -30,13 +32,13 @@ export interface Spec {
 /** Reads one spec file; undefined when the file is not a spec. Pure, so new formats are cheap. */
 export type SpecAdapter = (md: string, file: string, specs: SpecsConfig) => Spec | undefined;
 
-const CHECKBOX = /^\s*[-*] \[([ xX])\]\s*(.*)$/;
-const HEADING = /^(#{1,6})\s+(.*?)\s*#*\s*$/;
+export const CHECKBOX = /^\s*[-*] \[([ xX])\]\s*(.*)$/;
+export const HEADING = /^(#{1,6})\s+(.*?)\s*#*\s*$/;
 
 const normalise = (s: string): string => s.trim().replace(/:$/, "").trim().toLowerCase();
 
 /** Lines under the heading named `name`, up to the next heading of the same or a higher level. */
-const section = (lines: readonly string[], name: string): readonly string[] => {
+export const section = (lines: readonly string[], name: string): readonly string[] => {
   const want = normalise(name);
   const start = lines.findIndex((l) => normalise(HEADING.exec(l)?.[2] ?? "\0") === want);
   if (start < 0) return [];

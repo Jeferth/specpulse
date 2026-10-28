@@ -7,7 +7,7 @@ import type { ImageEntry } from "./data-file.ts";
 import { type GalleryItem, type Page, type PageMeta, renderHtml } from "./html.ts";
 import { clientScript } from "./io/client-script.ts";
 import { buildGallery, readSnapshots, saveSnapshot } from "./io/images.ts";
-import { readCommits, readModelInput, readRepoState } from "./io/repo.ts";
+import { commitIdPattern, readCommits, readModelInput, readRepoState } from "./io/repo.ts";
 import { packageVersion } from "./io/version.ts";
 import { buildModel } from "./model.ts";
 import { buildTimeline, readableStamp, stampOf } from "./timeline.ts";
@@ -75,7 +75,7 @@ export const buildPage = (o: BuildPageOptions): Page => {
   const outDir = resolve(root, config.outDir);
   mkdirSync(outDir, { recursive: true });
 
-  const commits = readCommits(root, config.specs.idPattern);
+  const commits = readCommits(root, commitIdPattern(root, config));
   const input = readModelInput(root, config, commits);
   const rendered = !o.keepGallery && o.render && config.gallery?.render !== undefined;
   const gallery = galleryOf(o, outDir, input.data.images);

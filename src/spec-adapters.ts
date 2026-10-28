@@ -5,14 +5,20 @@ import { hasFrontmatter } from "./frontmatter.ts";
 import { isSpecFile, markdownAdapter, type Spec, type SpecAdapter } from "./spec.ts";
 import { frontmatterAdapter } from "./spec-frontmatter.ts";
 
-export const SPEC_ADAPTERS: Readonly<Record<Exclude<SpecFormat, "auto">, SpecAdapter>> = {
+/** Formats read one file at a time; "folder" reads whole folders (see spec-folder.ts). */
+export const SPEC_ADAPTERS: Readonly<Record<Exclude<SpecFormat, "auto" | "folder">, SpecAdapter>> = {
   markdown: markdownAdapter,
   frontmatter: frontmatterAdapter,
 };
 
-/** "auto" decides per file: a closed `---` block on top means frontmatter, anything else markdown. */
+/**
+ * "auto" decides per file: a closed `---` block on top means frontmatter, anything else markdown.
+ * A single file of a folder spec is read the same way.
+ */
 export const adapterFor = (format: SpecFormat, md: string): SpecAdapter =>
-  format === "auto" ? SPEC_ADAPTERS[hasFrontmatter(md) ? "frontmatter" : "markdown"] : SPEC_ADAPTERS[format];
+  format === "auto" || format === "folder"
+    ? SPEC_ADAPTERS[hasFrontmatter(md) ? "frontmatter" : "markdown"]
+    : SPEC_ADAPTERS[format];
 
 /** Reads one spec file with the configured format. */
 export const readSpec = (md: string, file: string, specs: SpecsConfig): Spec | undefined =>

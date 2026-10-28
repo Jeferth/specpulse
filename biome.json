@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!docs", "!pnpm-lock.yaml", "!skills"]
+    "includes": ["**", "!docs", "!pnpm-lock.yaml", "!skills", "!examples/spec-kit/specs"]
   },
   "formatter": {
     "enabled": true,

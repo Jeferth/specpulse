@@ -1,6 +1,7 @@
 // `specpulse init`, pure part: guess the project layout from a list of file paths and turn the
 // guess into the smallest config that reproduces it. Disk access lives in src/commands/init.ts.
 import { type Config, defaultConfig, type Locale, type SpecFormat } from "./config.ts";
+import { FOLDER_FILES } from "./spec-folder.ts";
 
 /** A snapshot of the project: relative POSIX paths, plus the first bytes of some files. */
 export interface FileTree {
@@ -33,6 +34,9 @@ const SPEC_DIRS = [
   "spec",
   "docs/features",
 ];
+
+// One folder per spec: spec-kit, Kiro, OpenSpec, and the same idea under docs/.
+const FOLDER_SPEC_DIRS = ["specs", ".kiro/specs", "openspec/changes", "docs/specs"];
 
 const DATA_FILES: readonly { readonly name: string; readonly locale?: Locale }[] = [
   { name: "progress.json" },
@@ -114,6 +118,24 @@ const findSpecsDir = (paths: readonly string[]): string | undefined => {
   return (byIds ?? scored.find((s) => s.files > 0))?.dir;
 };
 
+/** Folders `<dir>/<name>/` that hold a tasks/spec/requirements/proposal file. */
+const specFoldersIn = (paths: readonly string[], dir: string): Set<string> => {
+  const prefix = `${dir}/`;
+  const names = new Set<string>();
+  for (const p of paths) {
+    if (!p.startsWith(prefix)) continue;
+    const [name, file, ...deeper] = p.slice(prefix.length).split("/");
+    if (name && file && deeper.length === 0 && FOLDER_FILES.includes(file.toLowerCase())) names.add(name);
+  }
+  return names;
+};
+
+/** The folder-per-spec layout with the most spec folders, if any. */
+export const findFolderSpecsDir = (paths: readonly string[]): string | undefined =>
+  FOLDER_SPEC_DIRS.map((dir) => ({ dir, n: specFoldersIn(paths, dir).size }))
+    .filter((d) => d.n > 0)
+    .sort((a, b) => b.n - a.n)[0]?.dir;
+
 /**
  * Regex for the IDs in spec file names: `F-0001` → `F-\d{4}`, `APP-1`/`APP-12` → `APP-\d{1,}`,
  * several prefixes → `[A-Z]+-\d{n,}`. Undefined when no file name starts with an ID.
@@ -160,10 +182,14 @@ export const detectLayout = (tree: FileTree): Detection => {
   const { paths } = tree;
   const roadmap = findRoadmap(paths);
   const phaseFile = findPhaseFile(paths);
-  const specsDir = findSpecsDir(paths);
-  const specFiles = specsDir === undefined ? [] : specFilesIn(paths, specsDir);
-  const idPattern = inferIdPattern(specFiles);
-  const specFormat = inferSpecFormat(specFiles, tree.heads);
+  const flatDir = findSpecsDir(paths);
+  const flatFiles = flatDir === undefined ? [] : specFilesIn(paths, flatDir);
+  const idPattern = inferIdPattern(flatFiles);
+  // Flat specs named by ID are an explicit choice; otherwise a folder-per-spec layout wins.
+  const folderDir = idPattern ? undefined : findFolderSpecsDir(paths);
+  const specsDir = folderDir ?? flatDir;
+  const specFiles = folderDir ? [] : flatFiles;
+  const specFormat = folderDir ? "folder" : inferSpecFormat(specFiles, tree.heads);
   const data = findDataFile(paths);
   const locale = layoutLocale(phaseFile, data?.locale);
   return {
