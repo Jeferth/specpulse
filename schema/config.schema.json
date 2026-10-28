@@ -6,14 +6,22 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
-    "$comment": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
+    "$comment": {
+      "type": "string"
+    },
     "title": {
       "type": "string",
       "minLength": 1,
       "description": "Dashboard title. Default: package.json name, else the folder name."
     },
-    "locale": { "enum": ["en", "pt-BR"], "default": "en", "description": "Dashboard language." },
+    "locale": {
+      "enum": ["en", "pt-BR", "es"],
+      "default": "en",
+      "description": "Dashboard language."
+    },
     "outDir": {
       "type": "string",
       "minLength": 1,
@@ -42,12 +50,30 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "dir": { "type": "string", "minLength": 1, "default": "docs/specs" },
+        "dir": {
+          "type": "string",
+          "minLength": 1,
+          "default": "docs/specs"
+        },
         "idPattern": {
           "type": "string",
           "minLength": 1,
           "default": "[A-Z]+-\\d{3,}",
           "description": "Regex for spec IDs: file names start with it, headings are '# <ID> · Title', commits cite it."
+        },
+        "format": {
+          "enum": ["markdown", "frontmatter", "auto"],
+          "default": "markdown",
+          "description": "markdown: \"# <ID> · Title\" + checkboxes. frontmatter: YAML block with id/title/status/milestone. auto: frontmatter when present, else markdown (per file)."
+        },
+        "acceptanceHeading": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Only checkboxes under this heading (any level, case-insensitive) count as acceptance criteria."
+        },
+        "idFrom": {
+          "enum": ["heading", "filename", "frontmatter"],
+          "description": "Where the spec ID comes from. Default: heading for markdown, frontmatter for frontmatter."
         }
       }
     },
@@ -57,8 +83,16 @@
       "required": ["dir"],
       "description": "Enables the Gallery and Timeline sections.",
       "properties": {
-        "dir": { "type": "string", "minLength": 1, "description": "Folder with the reference images." },
-        "referenceExt": { "type": "string", "minLength": 1, "default": ".png" },
+        "dir": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Folder with the reference images."
+        },
+        "referenceExt": {
+          "type": "string",
+          "minLength": 1,
+          "default": ".png"
+        },
         "sceneExt": {
           "type": "string",
           "minLength": 1,
@@ -71,6 +105,38 @@
         }
       }
     },
-    "timelineLimit": { "type": "integer", "minimum": 1, "default": 30 }
+    "timelineLimit": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 30
+    },
+    "live": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Live view options (only used with --serve).",
+      "properties": {
+        "check": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shell command for \"run check\", e.g. \"pnpm -s check\"."
+        },
+        "checkOnChange": {
+          "type": "boolean",
+          "default": false,
+          "description": "Also run check after file changes (long debounce, never in parallel)."
+        },
+        "claudeSessions": {
+          "type": "boolean",
+          "default": false,
+          "description": "Opt-in: show metadata (tool, file, time) of local Claude Code sessions of this project. Never prompt text."
+        },
+        "commits": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 30,
+          "description": "Commits shown in the Live feed."
+        }
+      }
+    }
   }
 }

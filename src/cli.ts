@@ -1,33 +1,21 @@
 #!/usr/bin/env node
-// specpulse [--cwd <dir>] [--config <path>] [--no-render] [--open] [--serve [--port N]]
-import { readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
-import { parseArgs, USAGE } from "./args.ts";
-import { generate } from "./generate.ts";
-import { loadConfig } from "./io/load-config.ts";
-import { openInBrowser, serve } from "./io/serve.ts";
+// specpulse [command] [options]. Without a command it builds the dashboard (see --help).
+import { runGenerate } from "./commands/generate.ts";
+import { runInit } from "./commands/init.ts";
+import { runMcp } from "./commands/mcp.ts";
+import { runSkill } from "./commands/skill.ts";
 
-const version = (): string => {
-  const pkg: unknown = JSON.parse(readFileSync(join(import.meta.dirname, "../package.json"), "utf8"));
-  return (pkg as { version?: string }).version ?? "0.0.0";
+type Command = (argv: readonly string[]) => void | Promise<void>;
+
+const COMMANDS: Readonly<Record<string, Command>> = { init: runInit, mcp: runMcp, skill: runSkill };
+
+const main = async (argv: readonly string[]): Promise<void> => {
+  const [first = "", ...rest] = argv;
+  const command = COMMANDS[first];
+  await (command ? command(rest) : runGenerate(argv));
 };
 
-const main = (argv: readonly string[]): void => {
-  const args = parseArgs(argv);
-  if (args.help) return void console.log(USAGE);
-  if (args.version) return void console.log(version());
-  const root = resolve(args.cwd ?? ".");
-  const { config } = loadConfig(root, args.config);
-  const { outDir, index } = generate({ root, config, render: args.render });
-  console.log(index);
-  if (args.open) openInBrowser(args.serve ? `http://localhost:${args.port}/` : pathToFileURL(index).href);
-  if (args.serve) serve(outDir, args.port);
-};
-
-try {
-  main(process.argv.slice(2));
-} catch (e) {
+main(process.argv.slice(2)).catch((e: unknown) => {
   console.error(`specpulse: ${(e as Error).message}`);
   process.exitCode = 1;
-}
+});

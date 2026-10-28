@@ -145,7 +145,7 @@ describe("config", () => {
       "c.json",
     );
     expect(c).toMatchObject({ title: "X", locale: "pt-BR", outDir: ".cache/specpulse" });
-    expect(c.specs).toEqual({ dir: "docs/specs", idPattern: "F-\\d{4}" });
+    expect(c.specs).toEqual({ dir: "docs/specs", idPattern: "F-\\d{4}", format: "markdown" });
     expect(c.gallery).toEqual({
       dir: "tests/golden",
       referenceExt: ".png",
@@ -196,5 +196,28 @@ describe("parseArgs", () => {
     expect(() => parseArgs(["--port", "abc"])).toThrow(/--port/);
     expect(() => parseArgs(["--cwd"])).toThrow(/--cwd needs a value/);
     expect(() => parseArgs(["--bogus"])).toThrow(/unknown option/);
+  });
+});
+
+describe("config: live and spec formats", () => {
+  it("reads live options and spec format fields", () => {
+    const c = parseConfig(
+      {
+        locale: "es",
+        specs: { format: "auto", acceptanceHeading: "Acceptance", idFrom: "filename" },
+        live: { check: "pnpm -s check", checkOnChange: true, claudeSessions: true, commits: 5 },
+      },
+      "d",
+      "c.json",
+    );
+    expect(c.locale).toBe("es");
+    expect(c.specs).toMatchObject({ format: "auto", acceptanceHeading: "Acceptance", idFrom: "filename" });
+    expect(c.live).toEqual({ check: "pnpm -s check", checkOnChange: true, claudeSessions: true, commits: 5 });
+  });
+
+  it("rejects bad live and spec format values", () => {
+    expect(() => parseConfig({ specs: { format: "yaml" } }, "d", "c.json")).toThrow(/format/);
+    expect(() => parseConfig({ live: { checkOnChange: "yes" } }, "d", "c.json")).toThrow(/checkOnChange/);
+    expect(() => parseConfig({ live: { nope: 1 } }, "d", "c.json")).toThrow(/unknown key "nope"/);
   });
 });
