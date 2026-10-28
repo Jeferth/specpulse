@@ -5,6 +5,8 @@ export interface Args {
   readonly render: boolean;
   readonly help: boolean;
   readonly version: boolean;
+  /** Print a plain-text progress summary instead of writing the dashboard. */
+  readonly summary: boolean;
   /** Project root; relative paths resolve against the process cwd. */
   readonly cwd?: string;
   /** Config path; relative paths resolve against the process cwd. */
@@ -13,7 +15,7 @@ export interface Args {
 
 export const DEFAULT_PORT = 4870;
 
-const FLAGS = ["--open", "--serve", "--no-render", "--help", "-h", "--version", "-v"];
+const FLAGS = ["--open", "--serve", "--no-render", "--help", "-h", "--version", "-v", "--summary"];
 const VALUED = ["--port", "--cwd", "--config"];
 
 export const USAGE = `Usage: specpulse [options]
@@ -24,6 +26,7 @@ Options:
   --cwd <dir>       project root (default: current directory)
   --config <path>   config file (default: specpulse.config.json or .specpulse.json in the root)
   --no-render       skip the configured render command
+  --summary         print a plain-text progress summary (for agents) instead of the dashboard
   --open            open the dashboard in the default browser
   --serve           serve the output folder on http://localhost (127.0.0.1 only)
   --port <n>        port for --serve (default: ${DEFAULT_PORT})
@@ -64,6 +67,7 @@ export const parseArgs = (argv: readonly string[]): Args => {
     render: !flags.has("--no-render"),
     help: flags.has("--help") || flags.has("-h"),
     version: flags.has("--version") || flags.has("-v"),
+    summary: flags.has("--summary"),
     ...(cwd === undefined ? {} : { cwd }),
     ...(config === undefined ? {} : { config }),
   };

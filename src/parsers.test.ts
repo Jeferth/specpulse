@@ -49,6 +49,11 @@ describe("parseSpec", () => {
       file: "docs/specs/F-0008-x.md",
       done: 2,
       total: 3,
+      criteria: [
+        { text: "one", done: true },
+        { text: "two", done: false },
+        { text: "three", done: true },
+      ],
     });
   });
 
@@ -185,11 +190,13 @@ describe("parseArgs", () => {
       render: false,
       help: false,
       version: false,
+      summary: false,
       cwd: "../app",
       config: "x.json",
     });
     expect(parseArgs([]).render).toBe(true);
     expect(parseArgs(["-h"]).help).toBe(true);
+    expect(parseArgs(["--summary"]).summary).toBe(true);
   });
 
   it("rejects bad ports, missing values and unknown options", () => {

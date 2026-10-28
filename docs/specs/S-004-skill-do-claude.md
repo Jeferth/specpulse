@@ -24,8 +24,19 @@ um marco, ele atualiza o JSON no mesmo commit, sem adivinhar status.
 
 ## Critérios de aceite
 
-- [ ] `SKILL.md` existe, vai no pacote e passa num lint simples de frontmatter.
-- [ ] `--summary` tem teste de snapshot com o `examples/basic`.
-- [ ] `skill install` cria a pasta, recusa sobrescrever sem `--force` e é testado com diretório temporário.
+- [x] `SKILL.md` existe, vai no pacote e passa num lint simples de frontmatter.
+- [x] `--summary` tem teste de snapshot com o `examples/basic`.
+- [x] `skill install` cria a pasta, recusa sobrescrever sem `--force` e é testado com diretório temporário.
 - [ ] Teste manual documentado: numa sessão do Claude Code, concluir uma spec de exemplo e ver o
       agente atualizar o arquivo de dados.
+
+## Teste manual
+
+1. Num projeto de teste (ex.: uma cópia de `examples/basic` com `git init`), rode
+   `node <specpulse>/dist/cli.js skill install` (ou `npx specpulse skill install`) e confira
+   `.claude/skills/specpulse/SKILL.md`.
+2. Abra o Claude Code nessa pasta e peça: "conclua o critério `exit code 1 on syntax errors` da
+   APP-002 e faça o commit".
+3. Esperado: o agente marca `- [x]` na spec, mantém `1.2` com `specs` (sem `status`), roda
+   `npx specpulse --summary` para conferir e inclui `docs/progress.json` (se mudou) no mesmo commit.
+4. Peça "aprove a imagem hero": o agente deve recusar e dizer que é decisão do dono.
