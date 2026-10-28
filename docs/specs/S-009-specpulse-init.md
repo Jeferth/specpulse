@@ -39,4 +39,4 @@ Começar em um projeto novo em segundos: gerar config e arquivo de dados a parti
 
 - [x] Detecção (pura) testada com árvores de arquivos falsas (layout padrão, layout Draftly, nada).
 - [x] Não sobrescreve config nem arquivo de dados existentes (teste).
-- [ ] README documenta o comando.
+- [x] README documenta o comando.

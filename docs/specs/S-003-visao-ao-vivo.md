@@ -36,7 +36,7 @@ check e, se o dono quiser, o que as sessões do Claude Code estão fazendo neste
 - [x] Sem opt-in, nenhum arquivo em `~/.claude` é aberto (teste com diretório falso).
 - [x] Com opt-in, o parser de JSONL extrai só metadados; teste garante que texto de prompt não vaza.
 - [x] Nada da visão Ao vivo aparece no `index.html` gerado sem `--serve`.
-- [ ] README documenta o opt-in e o que é lido.
+- [x] README documenta o opt-in e o que é lido.
 
 ## Notas de implementação
 

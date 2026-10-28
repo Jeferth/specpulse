@@ -64,16 +64,16 @@
         "format": {
           "enum": ["markdown", "frontmatter", "auto"],
           "default": "markdown",
-          "description": "markdown: \"# <ID> · Title\" + checkboxes. frontmatter: YAML block with id/title/status/milestone. auto: frontmatter when present, else markdown (per file)."
+          "description": "markdown: \"# <ID> · Title\" + checkboxes, file name starts with the ID. frontmatter: YAML block with id/title/status/milestone. auto: per file, frontmatter when the file starts with a closed --- block, otherwise markdown."
         },
         "acceptanceHeading": {
           "type": "string",
           "minLength": 1,
-          "description": "Only checkboxes under this heading (any level, case-insensitive) count as acceptance criteria."
+          "description": "Only checkboxes under this heading and its subsections count (case-insensitive, trailing colon ignored). A spec without the heading counts no criteria."
         },
         "idFrom": {
           "enum": ["heading", "filename", "frontmatter"],
-          "description": "Where the spec ID comes from. Default: heading for markdown, frontmatter for frontmatter."
+          "description": "Where the spec ID comes from. When set, only this source is used; with filename the file name must start with the ID. Default: heading for markdown; id, then heading, then file name for frontmatter."
         }
       }
     },

@@ -29,4 +29,4 @@ YAML, status declarado, IDs no nome do arquivo e checklists em seções específ
 - [x] `format: "frontmatter"` lê `id/title/status/milestone` com testes (incluindo frontmatter inválido).
 - [x] `acceptanceHeading` limita a contagem à seção certa.
 - [x] `format: "auto"` escolhe por arquivo e é coberto por teste.
-- [ ] Schema JSON e README atualizados; `examples/` ganha um projeto no formato frontmatter.
+- [x] Schema JSON e README atualizados; `examples/` ganha um projeto no formato frontmatter.
