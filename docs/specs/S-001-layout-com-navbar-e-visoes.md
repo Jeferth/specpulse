@@ -30,10 +30,26 @@ continuar legível quando o projeto tiver dezenas de fases, specs e imagens.
 
 ## Critérios de aceite
 
-- [ ] Header fixo com navbar e as seis visões; visão ativa marcada e refletida no hash.
-- [ ] Abrir `index.html#/specs` direto (via `file://`) mostra a visão Specs.
-- [ ] Visões sem dados não aparecem na navbar.
-- [ ] Filtros de Specs funcionam e o detalhe de uma spec tem URL própria.
-- [ ] HTML segue sem nenhuma requisição de rede (teste que procura `src=`/`href=` externos).
-- [ ] Screenshots Playwright a 1280px e 400px, nos dois temas, sem rolagem horizontal do body.
-- [ ] Renderização das visões testada como função pura (dados → HTML) no Vitest.
+- [x] Header fixo com navbar e as seis visões; visão ativa marcada e refletida no hash.
+- [x] Abrir `index.html#/specs` direto (via `file://`) mostra a visão Specs.
+- [x] Visões sem dados não aparecem na navbar.
+- [x] Filtros de Specs funcionam e o detalhe de uma spec tem URL própria.
+- [x] HTML segue sem nenhuma requisição de rede (teste que procura `src=`/`href=` externos).
+- [x] Screenshots Playwright a 1280px e 400px, nos dois temas, sem rolagem horizontal do body.
+- [x] Renderização das visões testada como função pura (dados → HTML) no Vitest.
+
+## Notas de implementação
+
+- Além das seis visões há uma sétima, **Guia** (`#/guide`, `#/guide/<seção>`, atalho `g h`): tutorial
+  em inglês, português e espanhol (`src/guide.ts`) com instalação, formatos, config, comandos, modo
+  ao vivo, skill e MCP, mais a config efetiva do projeto.
+- O idioma vem de `locale` na config, mas o seletor no header troca o painel todo (en, pt-BR, es)
+  e lembra a escolha neste navegador. As mensagens são dados (`src/i18n.ts`, `{placeholders}`), por
+  isso vão embutidas como JSON.
+- Visões são funções puras em `src/client-views.ts`; `src/client-app.ts` cuida de estado, eventos e
+  live. `src/client-bundle.ts` junta os dois num IIFE (remove imports/exports); `src/io/client-script.ts`
+  lê o `.js` do `dist/` ou, num checkout, o `.ts` com os tipos removidos pelo Node.
+- Conferido com Playwright (1280px claro/escuro e 400px claro/escuro): sem rolagem horizontal, sem
+  erros de página, sem requisições de rede; filtro mantém o foco, clique na linha abre o detalhe,
+  atalhos, troca de idioma lembrada, hash desconhecido ou visão oculta caem na Visão geral. O roteiro
+  está em `scripts/ui-check.mjs`.

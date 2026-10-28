@@ -17,13 +17,31 @@ const titleOf = (root: string): string => {
   return basename(resolve(root));
 };
 
-/** `explicit` resolves against the process cwd; the default names are looked up in `root`. */
+/** The `specpulse` key of package.json, for projects that keep tool config there. */
+const fromPackageJson = (root: string, title: string): { config: Config; path: string } | undefined => {
+  const pkg = join(root, "package.json");
+  if (!existsSync(pkg)) return undefined;
+  let raw: unknown;
+  try {
+    raw = (JSON.parse(readFileSync(pkg, "utf8")) as { specpulse?: unknown }).specpulse;
+  } catch {
+    return undefined;
+  }
+  if (raw === undefined) return undefined;
+  const where = `${pkg}#specpulse`;
+  return { config: parseConfig(raw, title, where), path: where };
+};
+
+/**
+ * `explicit` resolves against the process cwd; the default names are looked up in `root`, then the
+ * `specpulse` key of package.json.
+ */
 export const loadConfig = (root: string, explicit?: string): { config: Config; path?: string } => {
   const path = explicit
     ? resolve(explicit)
     : CONFIG_FILES.map((f) => join(root, f)).find((f) => existsSync(f));
   const title = titleOf(root);
-  if (!path) return { config: defaultConfig(title) };
+  if (!path) return fromPackageJson(root, title) ?? { config: defaultConfig(title) };
   if (!existsSync(path)) throw new Error(`config not found: ${path}`);
   let raw: unknown;
   try {
