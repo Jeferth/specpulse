@@ -130,3 +130,20 @@ export const tailLines = (text: string, n: number): string[] =>
     .map((l) => l.trimEnd())
     .filter((l) => l !== "")
     .slice(-n);
+
+/** Files of `git log --name-only --format=%x1e%cI`, each stamped with its commit time. */
+export const parseNameLog = (text: string): RecentFile[] =>
+  text.split("\x1e").flatMap((rec) => {
+    const [at = "", ...files] = rec
+      .trim()
+      .split(/\r?\n/)
+      .map((l) => l.trim());
+    return at ? files.filter((f) => f !== "").map((path) => ({ path, at })) : [];
+  });
+
+/** What a rebuild tells the open pages: the changed paths and the commits that just appeared. */
+export const activityOf = (
+  files: readonly string[],
+  prev: readonly { hash: string }[],
+  next: readonly { hash: string }[],
+): Activity => ({ files: [...files], newCommits: prev.length ? newCommits(prev, next) : [] });

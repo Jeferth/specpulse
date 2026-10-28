@@ -27,9 +27,21 @@ arquivo de dados ou git mudam, sem recarregar a página.
 
 ## Critérios de aceite
 
-- [ ] Editar um `- [ ]` para `- [x]` numa spec atualiza a barra no navegador em < 2 s, sem reload.
-- [ ] Commit novo aparece no rodapé e nas specs citadas sem reload.
-- [ ] Perder e recuperar a conexão reconecta sozinho e reaplica o modelo.
-- [ ] Servidor só escuta em 127.0.0.1; `POST /render` sem token devolve 403.
-- [ ] Debounce e diff de "o que mudou" são funções puras com teste.
-- [ ] Teste Playwright: página aberta, arquivo alterado, DOM atualizado sem navegação.
+- [x] Editar um `- [ ]` para `- [x]` numa spec atualiza a barra no navegador em < 2 s, sem reload.
+- [x] Commit novo aparece no rodapé e nas specs citadas sem reload.
+- [x] Perder e recuperar a conexão reconecta sozinho e reaplica o modelo.
+- [x] Servidor só escuta em 127.0.0.1; `POST /render` sem token devolve 403.
+- [x] Debounce e diff de "o que mudou" são funções puras com teste.
+- [x] Teste Playwright: página aberta, arquivo alterado, DOM atualizado sem navegação.
+
+## Notas de implementação
+
+- `src/io/serve.ts` (`serveLive`): observa só as entradas (`src/watch-paths.ts`, puro): pastas de
+  fase, specs e galeria recursivas; roadmap, arquivo de dados e `.git/HEAD`/`packed-refs` pela pasta
+  pai; `.git/refs` recursiva. Nunca a raiz inteira (node_modules) nem `.git/index` (o `git status`
+  reescreve o índice e faria laço). Onde `fs.watch` falha, polling de assinatura a cada 1 s.
+- Debounce de 300 ms (`src/debounce.ts`, timers injetados); cada rebuild regrava o `index.html`.
+- Além do token por sessão em `POST`, o servidor recusa `Host` que não seja `localhost`/`127.0.0.1`
+  da porta (proteção contra DNS rebinding).
+- Teste de navegador: `node scripts/ui-check.mjs` com `PLAYWRIGHT=<caminho do playwright>` (o
+  Playwright não é dependência do pacote). Mede ~0,8 s entre salvar a spec e o DOM atualizar.

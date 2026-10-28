@@ -191,6 +191,7 @@ describe("parseArgs", () => {
       help: false,
       version: false,
       summary: false,
+      claudeSessions: false,
       cwd: "../app",
       config: "x.json",
     });

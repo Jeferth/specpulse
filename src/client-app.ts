@@ -189,6 +189,9 @@ const onClick = (s: AppState, app: App, e: MouseEvent): void => {
 const onInput = (s: AppState, app: App, e: Event): void => {
   const el = e.target;
   if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement)) return;
+  // A text field also fires "change" on blur, i.e. on the mousedown of a click elsewhere;
+  // re-rendering then would swallow that click.
+  if (e.type === "change" && el instanceof HTMLInputElement) return;
   if (el.dataset["control"] === "lang") {
     s.locale = el.value as Locale;
     store(LOCALE_KEY, s.locale);

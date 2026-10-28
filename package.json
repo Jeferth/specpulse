@@ -28,22 +28,29 @@
   "files": [
     "dist",
     "schema",
+    "skills",
     "README.md",
     "LICENSE"
   ],
+  "sideEffects": false,
   "engines": {
     "node": ">=22.18.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "packageManager": "pnpm@10.14.0",
   "scripts": {
     "build": "node scripts/clean.ts && tsc -p tsconfig.build.json",
     "test": "vitest run",
+    "test:pack": "node scripts/pack-test.ts",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "biome check .",
     "format": "biome check --write .",
     "check": "biome check . && tsc -p tsconfig.json && vitest run",
     "dev": "node src/cli.ts",
-    "prepublishOnly": "pnpm run check && pnpm run build"
+    "prepublishOnly": "pnpm run check && pnpm run build",
+    "test:ui": "node scripts/ui-check.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.3",

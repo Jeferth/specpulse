@@ -31,9 +31,21 @@ check e, se o dono quiser, o que as sessões do Claude Code estão fazendo neste
 
 ## Critérios de aceite
 
-- [ ] Feed de commits e arquivos alterados atualizam via SSE.
-- [ ] `live.check` roda sob demanda, nunca em paralelo, e mostra status e saída truncada.
-- [ ] Sem opt-in, nenhum arquivo em `~/.claude` é aberto (teste com diretório falso).
-- [ ] Com opt-in, o parser de JSONL extrai só metadados; teste garante que texto de prompt não vaza.
-- [ ] Nada da visão Ao vivo aparece no `index.html` gerado sem `--serve`.
+- [x] Feed de commits e arquivos alterados atualizam via SSE.
+- [x] `live.check` roda sob demanda, nunca em paralelo, e mostra status e saída truncada.
+- [x] Sem opt-in, nenhum arquivo em `~/.claude` é aberto (teste com diretório falso).
+- [x] Com opt-in, o parser de JSONL extrai só metadados; teste garante que texto de prompt não vaza.
+- [x] Nada da visão Ao vivo aparece no `index.html` gerado sem `--serve`.
 - [ ] README documenta o opt-in e o que é lido.
+
+## Notas de implementação
+
+- `--claude-sessions` (ou `live.claudeSessions`) liga a leitura; a pasta é o caminho do projeto com
+  todo caractere não alfanumérico trocado por `-` (`src/claude-sessions.ts`).
+- Do transcript só saem: nome da ferramenta, caminho de arquivo dentro do projeto, horário e
+  assunto de `git commit`. Texto de prompt, resposta, entradas de ferramenta (comandos inteiros,
+  conteúdo de edições) e resultados nunca são copiados.
+- Arquivos tocados nos últimos 10 minutos = mtime dos arquivos do `git status` + arquivos dos
+  commits dos últimos 10 minutos.
+- `live.check` roda com `src/io/check.ts`: um por vez; pedido durante uma execução enfileira
+  exatamente mais uma.
