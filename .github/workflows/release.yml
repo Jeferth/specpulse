@@ -1,0 +1,63 @@
+name: Release
+
+# Publishes to npm only from a version tag (v*) or a manual run; never on ordinary pushes.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Run every step but only `npm publish --dry-run`"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  # OIDC token for npm trusted publishing and the provenance attestation.
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing (OIDC, no token) needs npm 11.5.1 or newer.
+      - run: npm install -g npm@^11.5.1
+
+      - name: Tag matches package.json version
+        if: github.ref_type == 'tag'
+        run: |
+          expected="v$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "$expected" ]; then
+            echo "tag $GITHUB_REF_NAME does not match package.json ($expected)" >&2
+            exit 1
+          fi
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm check
+
+      - run: pnpm build
+
+      - run: pnpm test:pack
+
+      # Uses npm trusted publishing: configure this repository and workflow file as a trusted
+      # publisher on npmjs.com. Alternative without it: create an automation token, store it as
+      # the NPM_TOKEN secret and add to this step:
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish
+        run: npm publish --provenance --access public ${{ inputs.dry-run && '--dry-run' || '' }}

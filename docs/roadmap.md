@@ -27,7 +27,9 @@ fica melhor depois de S-001 e S-002, para o painel novo já ser um ganho claro.
 
 ## Decisões abertas (dono)
 
-- Nome final no npm (`specpulse` livre?) e URL do repositório.
-- Changesets ou changelog manual.
-- Locale padrão `en` para o público; o Draftly usa `pt-BR` pela config.
-- MCP sem SDK (zero dependências) ou com `@modelcontextprotocol/sdk`.
+- ~~Nome final no npm~~ → `specpulse` (confirmado). URL do repositório: **pendente** (o dono ainda
+  não criou o repositório; `repository`/`homepage`/`bugs` e a imagem absoluta do README esperam).
+- ~~Changesets ou changelog manual~~ → changelog manual (`CHANGELOG.md`, Keep a Changelog), sem
+  dependência nova.
+- ~~Locale padrão~~ → `en` para o público; o Draftly usa `pt-BR` pela config.
+- ~~MCP com ou sem SDK~~ → sem SDK (JSON-RPC por stdio escrito à mão, zero dependências).

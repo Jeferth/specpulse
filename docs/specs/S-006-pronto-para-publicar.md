@@ -7,27 +7,60 @@ pedir**.
 
 ## Comportamento
 
-- `package.json`: `repository`, `homepage`, `bugs` (com a URL que o dono escolher),
-  `publishConfig: { access: "public", provenance: true }`, `files` revisado, `sideEffects: false`
-  onde couber. Conferir com `pnpm pack --dry-run` que o tarball só tem `dist/`, `schema/`,
-  `skills/`, `README.md`, `LICENSE`, `package.json`.
-- README: imagem com URL absoluta (o npm não resolve caminho relativo do repo).
-- CI GitHub Actions (`.github/workflows/ci.yml`): Node 22 e 24, Linux e Windows, `pnpm install
-  --frozen-lockfile`, `pnpm check`, `pnpm build`, smoke test `node dist/cli.js --cwd examples/basic`.
-- Release (`.github/workflows/release.yml`): disparo manual ou por tag `v*`, `npm publish
-  --provenance` com `id-token: write`; nunca em push comum.
-- Versionamento SemVer; `CHANGELOG.md` no formato Keep a Changelog, mantido à mão ou com
-  changesets (decisão do dono). Primeira versão pública: `0.1.0`.
-- Teste de pacote: `pnpm pack`, instalar o `.tgz` num diretório temporário e rodar o bin.
+- `package.json`: `publishConfig: { access: "public" }`, `files` = `dist`, `schema`, `skills`,
+  `README.md`, `LICENSE` (o `package.json` sempre entra), `sideEffects: false` (não afeta o bin).
+  `version` continua `0.0.0` até a checklist rodar. `repository`, `homepage` e `bugs` **ficam de
+  fora até o dono criar o repositório** (ver Decisões).
+- Conferir que o tarball só tem `dist/`, `schema/`, `skills/`, `README.md`, `LICENSE`,
+  `package.json`. O pnpm 10.14 não tem `pnpm pack --dry-run`, então a conferência usa
+  `npm pack --dry-run --json` (é o mesmo `files`; e é o npm que empacota no workflow de release).
+- README: imagem com URL absoluta (o npm não resolve caminho relativo do repo) — **pendente**,
+  depende da URL do repositório.
+- CI GitHub Actions (`.github/workflows/ci.yml`): Node 22 e 24 × `ubuntu-latest` e
+  `windows-latest`, disparo em `push` e `pull_request`, `permissions: contents: read`;
+  `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm build`, smoke test
+  `node dist/cli.js --cwd examples/basic --no-render` e `pnpm test:pack`.
+- Release (`.github/workflows/release.yml`): só `workflow_dispatch` (com `dry-run`, padrão
+  ligado) ou tag `v*`; nunca em push comum. `permissions: contents: read, id-token: write`.
+  Confere que a tag bate com a versão do `package.json`, roda check, build e `test:pack`, depois
+  `npm publish --provenance --access public`. Funciona com trusted publishing do npm (OIDC, sem
+  token; exige npm ≥ 11.5.1, instalado no próprio job); a alternativa com o secret `NPM_TOKEN`
+  está comentada no arquivo.
+- Versionamento SemVer; `CHANGELOG.md` no formato Keep a Changelog, mantido à mão. Primeira
+  versão pública: `0.1.0`.
+- Teste de pacote (`pnpm test:pack` = `node scripts/pack-test.ts`, depois do `pnpm build`):
+  confere a lista de arquivos do tarball e a ausência de dependências de runtime, roda
+  `npm pack` num diretório temporário, instala o `.tgz` num projeto novo
+  (`npm install --no-audit --no-fund`, sem rede porque não há dependências), roda
+  `npx specpulse --version`, gera o painel numa cópia de `examples/basic` e importa a API
+  (`generate`, `loadConfig`, `buildModel`, `specpulse/package.json`). Limpa tudo no fim
+  (`KEEP_PACK_TEST=1` mantém a pasta para inspeção).
+
+## Decisões
+
+- **Nome no npm:** `specpulse` (confirmado pelo dono).
+- **Repositório:** ainda não existe. Não inventar URL: `repository`, `homepage`, `bugs` e a URL
+  absoluta da imagem do README entram quando o dono criar o repositório (passo 3 da checklist).
+- **Changelog manual** (Keep a Changelog), sem changesets: zero dependências novas, inclusive de
+  desenvolvimento.
+- **Provenance só no workflow.** `provenance: true` em `publishConfig` faria um `pnpm publish`
+  local (fora do GitHub Actions, sem OIDC) falhar; por isso o `--provenance` é passado só no
+  `release.yml` e o `publishConfig` tem apenas `access: "public"`.
 
 ## Checklist de publicação (só quando o dono pedir)
 
-1. `git rev-parse --abbrev-ref HEAD` = `main`, árvore limpa, `pnpm check` e `pnpm build` verdes.
-2. Dono confirma nome no npm (`npm view specpulse` deve dar 404) e a URL do repositório.
-3. Dono cria o repositório no GitHub e autoriza `git remote add` + `git push`.
-4. Dono faz `npm login` (ou configura trusted publishing) — o agente não faz login.
-5. Atualizar versão e `CHANGELOG.md`, commit `chore(release): 🔖 v0.1.0`, tag `v0.1.0`.
-6. Publicar pelo workflow de release (provenance) ou `pnpm publish --access public` com o dono.
+1. `git rev-parse --abbrev-ref HEAD` = `main`, árvore limpa, `pnpm check`, `pnpm build` e
+   `pnpm test:pack` verdes.
+2. Dono confirma que o nome está livre (`npm view specpulse` deve dar 404) e a URL do
+   repositório.
+3. Dono cria o repositório no GitHub e autoriza `git remote add` + `git push`. No mesmo passo:
+   `repository`, `homepage` e `bugs` no `package.json` e URL absoluta da imagem do README.
+4. Dono faz `npm login` ou configura trusted publishing (npmjs.com → pacote → Trusted publisher:
+   o repositório e `release.yml`) — o agente não faz login.
+5. Atualizar versão e `CHANGELOG.md` (`[Unreleased]` → `[0.1.0] - AAAA-MM-DD`, link de
+   comparação), commit `chore(release): 🔖 v0.1.0`, tag `v0.1.0`.
+6. Publicar pelo workflow de release (push da tag, ou manual com `dry-run` desligado) — com
+   provenance. Alternativa local com o dono: `pnpm publish --access public` (sem provenance).
 7. Conferir `npx specpulse@0.1.0 --version` num diretório limpo.
 
 ## Fora do escopo
@@ -36,8 +69,11 @@ pedir**.
 
 ## Critérios de aceite
 
-- [ ] `pnpm pack --dry-run` lista só os arquivos esperados.
-- [ ] Teste instala o `.tgz` num diretório temporário e roda `specpulse --version` e uma geração.
+- [x] `npm pack --dry-run --json` lista só os arquivos esperados (asserção em
+      `scripts/pack-test.ts`; o pnpm 10.14 não tem `pack --dry-run`).
+- [x] Teste instala o `.tgz` num diretório temporário e roda `specpulse --version` e uma geração.
 - [ ] Workflows de CI e release escritos e validados com `actionlint` (se disponível) — sem push.
-- [ ] `CHANGELOG.md` criado com a seção `Unreleased`.
+      Escritos e revisados à mão; `actionlint` não está instalado nesta máquina, então a
+      validação fica para quando houver o binário ou para a primeira execução no GitHub.
+- [x] `CHANGELOG.md` criado com a seção `Unreleased`.
 - [ ] Checklist acima revisada pelo dono.

@@ -27,6 +27,9 @@ acontece no repositório do Draftly.**
 - Classes CSS e chave de tema no `localStorage` mudaram (`specpulse-theme`).
 - Imagens copiadas como `img/reference-<nome>.png` (antes `img/golden-<nome>.png`).
 - KPI "goldens aguardando aprovação" virou "imagens aguardando aprovação".
+- Página única virou app com visões e rotas por hash (`#/overview`, `#/phases`, `#/specs`,
+  `#/gallery`, `#/timeline`, `#/live`, `#/guide`); `--serve` atualiza o painel ao vivo.
+- Comandos novos: `specpulse init`, `specpulse mcp`, `specpulse skill install`, `--summary`.
 
 ## Fora do escopo
 
@@ -34,7 +37,8 @@ acontece no repositório do Draftly.**
 
 ## Critérios de aceite
 
-- [ ] `docs/migracao-draftly.md` escrito com os passos e as diferenças.
-- [ ] Teste automatizado que roda o `examples/draftly.config.json` contra uma fixture no layout do
-      Draftly (fase-N, F-NNNN, `progresso.json`, goldens) e confere os números.
+- [x] `docs/migracao-draftly.md` escrito com os passos e as diferenças.
+- [x] Teste automatizado que roda o `examples/draftly.config.json` contra uma fixture no layout do
+      Draftly (fase-N, F-NNNN, `progresso.json`, goldens) e confere os números
+      (`src/draftly-layout.test.ts`; confere o modelo, não o HTML).
 - [ ] Dono revisou o roteiro.
