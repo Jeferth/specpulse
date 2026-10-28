@@ -13,7 +13,7 @@
     "cli"
   ],
   "license": "MIT",
-  "author": "Leonardo Lima",
+  "author": "Jeferth Crisostomo",
   "type": "module",
   "bin": {
     "specpulse": "./dist/cli.js"

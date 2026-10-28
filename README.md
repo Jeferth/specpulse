@@ -403,4 +403,4 @@ node dist/cli.js --cwd examples/basic --open
 
 ## License
 
-[MIT](LICENSE) © 2026 Leonardo Lima
+[MIT](LICENSE) © 2026 Jeferth Crisostomo
