@@ -16,21 +16,26 @@ your build, framework or tooling changes.
 
 ## Status: pre-release
 
-`0.1.0`, the first public release. The CLI, the config format and the data file format may still
-change before `1.0.0`. See [`CHANGELOG.md`](CHANGELOG.md).
+[`specpulse` on npm](https://www.npmjs.com/package/specpulse), currently `0.1.0`, the first public
+release. The CLI, the config format and the data file format may still change before `1.0.0`. See
+[`CHANGELOG.md`](CHANGELOG.md).
 
 ## Install
 
-Requires Node.js 22.18 or newer.
+Requires Node.js 22.18 or newer. Install it as a dev dependency of your project:
 
 ```sh
-npm i -D specpulse        # or: pnpm add -D specpulse · yarn add -D specpulse · bun add -d specpulse
+npm i -D specpulse
+pnpm add -D specpulse
+yarn add -D specpulse
+bun add -d specpulse
 ```
 
-Until the first release, link a local checkout instead:
+Or try it without installing, from the project root:
 
 ```sh
-pnpm add -D link:../specpulse   # after `pnpm build` in the specpulse folder
+npx specpulse init
+npx specpulse --open
 ```
 
 Add scripts so the whole team runs it the same way, and keep the output out of git:

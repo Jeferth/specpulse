@@ -70,7 +70,7 @@ pedir**.
 
 - Executar qualquer passo da checklist sem pedido explícito.
 
-## Primeira publicação local (pedida pelo dono em 2026-10-28)
+## Primeira publicação local (feita pelo dono em 2026-10-28: `0.1.0` é a `latest`)
 
 O trusted publishing só se configura com o pacote já existente, então a `0.1.0` sai da máquina
 do dono, sem repositório e sem provenance. O agente deixou versão, CHANGELOG e README prontos;
