@@ -12,11 +12,11 @@ It fits any JavaScript project, frontend or backend, app, library or monorepo: i
 markdown, JSON and git, never imports your code and has **zero runtime dependencies**. Nothing in
 your build, framework or tooling changes.
 
-![specpulse dashboard for the basic example](docs/assets/screenshot.png)
+![specpulse dashboard for the basic example](https://cdn.jsdelivr.net/npm/specpulse/docs/assets/screenshot.png)
 
 ## Status: pre-release
 
-`0.0.0`, not yet published to npm. The CLI, the config format and the data file format may still
+`0.1.0`, the first public release. The CLI, the config format and the data file format may still
 change before `1.0.0`. See [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Install

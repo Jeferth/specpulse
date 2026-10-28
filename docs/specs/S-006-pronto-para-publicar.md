@@ -9,13 +9,16 @@ pedir**.
 
 - `package.json`: `publishConfig: { access: "public" }`, `files` = `dist`, `schema`, `skills`,
   `README.md`, `LICENSE` (o `package.json` sempre entra), `sideEffects: false` (não afeta o bin).
-  `version` continua `0.0.0` até a checklist rodar. `repository`, `homepage` e `bugs` **ficam de
+  `version` = `0.1.0` (preparada em 2026-10-28). `repository`, `homepage` e `bugs` **ficam de
   fora até o dono criar o repositório** (ver Decisões).
 - Conferir que o tarball só tem `dist/`, `schema/`, `skills/`, `README.md`, `LICENSE`,
   `package.json`. O pnpm 10.14 não tem `pnpm pack --dry-run`, então a conferência usa
   `npm pack --dry-run --json` (é o mesmo `files`; e é o npm que empacota no workflow de release).
-- README: imagem com URL absoluta (o npm não resolve caminho relativo do repo) — **pendente**,
-  depende da URL do repositório.
+- README: imagem com URL absoluta (o npm não resolve caminho relativo sem `repository`). Como o
+  repositório ainda não existe, `docs/assets/screenshot.png` vai no pacote (57 KB) e o README
+  aponta para ela pelo jsDelivr (`cdn.jsdelivr.net/npm/specpulse/...`), que serve arquivos de
+  pacotes publicados. Quando houver repositório, dá para trocar pela URL do GitHub e tirar a
+  imagem do `files`.
 - CI GitHub Actions (`.github/workflows/ci.yml`): Node 22 e 24 × `ubuntu-latest` e
   `windows-latest`, disparo em `push` e `pull_request`, `permissions: contents: read`;
   `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm build`, smoke test
@@ -51,7 +54,7 @@ pedir**.
 
 1. `git rev-parse --abbrev-ref HEAD` = `main`, árvore limpa, `pnpm check`, `pnpm build` e
    `pnpm test:pack` verdes.
-2. Dono confirma que o nome está livre (`npm view specpulse` deve dar 404) e a URL do
+2. Dono confirma que o nome está livre (`npm view specpulse` deu 404 em 2026-10-28) e a URL do
    repositório.
 3. Dono cria o repositório no GitHub e autoriza `git remote add` + `git push`. No mesmo passo:
    `repository`, `homepage` e `bugs` no `package.json` e URL absoluta da imagem do README.
@@ -66,6 +69,19 @@ pedir**.
 ## Fora do escopo
 
 - Executar qualquer passo da checklist sem pedido explícito.
+
+## Primeira publicação local (pedida pelo dono em 2026-10-28)
+
+O trusted publishing só se configura com o pacote já existente, então a `0.1.0` sai da máquina
+do dono, sem repositório e sem provenance. O agente deixou versão, CHANGELOG e README prontos;
+build e publish são do dono:
+
+1. `pnpm install && pnpm check && pnpm build && pnpm test:pack`
+2. `npm publish --dry-run` (confere a lista de arquivos e a versão)
+3. `npm publish` (`publishConfig` já dá `access: public`; pede o código do 2FA)
+4. `npx specpulse@0.1.0 --version` num diretório limpo
+5. Opcional: `git tag v0.1.0`. Depois de criar o repositório, configurar o trusted publisher
+   (passo 4 da checklist) para as próximas versões saírem pelo `release.yml`.
 
 ## Critérios de aceite
 

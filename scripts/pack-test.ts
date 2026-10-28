@@ -29,7 +29,7 @@ const run = (command: string, cwd: string): string => {
   return r.stdout;
 };
 
-const ALLOWED_ROOT_FILES = ["package.json", "README.md", "LICENSE"];
+const ALLOWED_ROOT_FILES = ["package.json", "README.md", "LICENSE", "docs/assets/screenshot.png"];
 const ALLOWED_DIRS = ["dist/", "schema/", "skills/"];
 
 const requiredFiles = (): string[] => {

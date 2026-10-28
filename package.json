@@ -1,6 +1,6 @@
 {
   "name": "specpulse",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Local, self-contained progress dashboard for spec-driven projects: phases, milestones, specs, git history and image galleries in one HTML file.",
   "keywords": [
     "progress",
@@ -29,6 +29,7 @@
     "dist",
     "schema",
     "skills",
+    "docs/assets/screenshot.png",
     "README.md",
     "LICENSE"
   ],

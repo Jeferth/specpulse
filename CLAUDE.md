@@ -1,6 +1,6 @@
 # specpulse
 
-Pacote npm (ainda **não publicado**, `0.0.0`) que gera um painel de progresso local e
+Pacote npm (`0.1.0`, primeira versão pública) que gera um painel de progresso local e
 autossuficiente (`index.html` sem rede) para projetos guiados por specs: fases, marcos, specs com
 checkboxes de aceite, commits que citam cada spec, galeria de imagens de referência e linha do
 tempo dos renders. Nasceu do painel interno de um projeto (Draftly) e foi generalizado: tudo que

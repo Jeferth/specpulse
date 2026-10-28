@@ -8,6 +8,8 @@ versions may change the CLI, the config format and the data file format.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-28
+
 ### Added
 
 - Self-contained progress dashboard: a single `index.html` with no network access (no CDN,
