@@ -80,7 +80,7 @@ One page, several views (hash routes, so links and bookmarks work even from `fil
 | View                 | Route                        | What it shows                                                                    |
 | -------------------- | ---------------------------- | -------------------------------------------------------------------------------- |
 | Overview             | `#/overview`                 | KPIs, progress per phase, current phase, recently touched specs, pending images. |
-| Phases               | `#/phases`, `#/phases/1`     | Milestones with status, progress and the **source** of every status.            |
+| Phases               | `#/phases`, `#/phases/1`     | Milestones with status, progress and the **source** of every status.             |
 | Specs                | `#/specs`, `#/specs/APP-001` | Table with text/status/milestone filters; one page per spec (criteria, commits). |
 | Gallery and Timeline | `#/gallery`, `#/timeline`    | Reference images next to fresh renders, and one snapshot per run (optional).     |
 | Live                 | `#/live`                     | Only with `--serve`: commits, changed files, your check command, agent activity. |
@@ -105,18 +105,18 @@ specpulse skill install         # Claude Code skill (see below)
 specpulse mcp                   # MCP server over stdio (see below)
 ```
 
-| Option              | Meaning                                                                         |
-| ------------------- | ------------------------------------------------------------------------------- |
-| `--cwd <dir>`       | Project root (default: current directory).                                      |
+| Option              | Meaning                                                                          |
+| ------------------- | -------------------------------------------------------------------------------- |
+| `--cwd <dir>`       | Project root (default: current directory).                                       |
 | `--config <path>`   | Config file (default: `specpulse.config.json`, `.specpulse.json`, package.json). |
-| `--no-render`       | Do not run `gallery.render`.                                                    |
-| `--summary`         | Print a plain-text progress summary instead of writing the dashboard.           |
-| `--open`            | Open the dashboard in the default browser.                                      |
-| `--serve`           | Serve it live on `127.0.0.1` (watch + Server-Sent Events).                      |
-| `--port <n>`        | Port for `--serve` (default `4870`).                                            |
-| `--claude-sessions` | With `--serve`: show metadata of local Claude Code sessions (opt-in).           |
-| `-v`, `--version`   | Print the version.                                                              |
-| `-h`, `--help`      | Print the help (`specpulse <command> --help` for a command).                    |
+| `--no-render`       | Do not run `gallery.render`.                                                     |
+| `--summary`         | Print a plain-text progress summary instead of writing the dashboard.            |
+| `--open`            | Open the dashboard in the default browser.                                       |
+| `--serve`           | Serve it live on `127.0.0.1` (watch + Server-Sent Events).                       |
+| `--port <n>`        | Port for `--serve` (default `4870`).                                             |
+| `--claude-sessions` | With `--serve`: show metadata of local Claude Code sessions (opt-in).            |
+| `-v`, `--version`   | Print the version.                                                               |
+| `-h`, `--help`      | Print the help (`specpulse <command> --help` for a command).                     |
 
 ## What it reads
 
@@ -335,11 +335,11 @@ Open specs:
 `specpulse mcp [--cwd <dir>] [--config <path>]` runs a [Model Context Protocol] server over stdio
 (no SDK, no extra dependencies) with three tools:
 
-| Tool                | What it does                                                                                                                                                                      |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `progress_status`   | Current phase, milestones (status, progress, source) and open specs. Optional `phase`, `spec`.                                                                                    |
+| Tool                | What it does                                                                                                                                                                                                               |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `progress_status`   | Current phase, milestones (status, progress, source) and open specs. Optional `phase`, `spec`.                                                                                                                             |
 | `progress_update`   | Edits the data file: `{ milestone, status?, source?, specs?, note? }` or `{ image, approved: false }`. Keeps key order, `$comment` and the file's language; refuses `approved: true` and a manual status without `source`. |
-| `progress_snapshot` | Regenerates the dashboard (like `--no-render`) and returns its path plus the summary.                                                                                            |
+| `progress_snapshot` | Regenerates the dashboard (like `--no-render`) and returns its path plus the summary.                                                                                                                                      |
 
 Register it in Claude Code:
 
@@ -385,7 +385,7 @@ The pure building blocks (`parseRoadmap`, `parseMilestones`, `parseSpec`, `readS
 
 ```yaml
 - run: npx specpulse --no-render
-- run: npx specpulse --summary   # progress in the job log
+- run: npx specpulse --summary # progress in the job log
 - uses: actions/upload-artifact@v4
   with: { name: progress, path: .cache/specpulse }
 ```
