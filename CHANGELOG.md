@@ -8,6 +8,8 @@ versions may change the CLI, the config format and the data file format.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-29
+
 ### Added
 
 - `specs.format: "folder"`: one folder per spec, as written by spec-kit (`specs/001-name/`), Kiro

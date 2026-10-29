@@ -18,9 +18,8 @@ folders as they are ([details](#spec-kit-kiro-and-openspec)).
 
 ## Status: pre-release
 
-[`specpulse` on npm](https://www.npmjs.com/package/specpulse), currently `0.1.0`, the first public
-release. The CLI, the config format and the data file format may still change before `1.0.0`. See
-[`CHANGELOG.md`](CHANGELOG.md).
+[`specpulse` on npm](https://www.npmjs.com/package/specpulse), currently `0.2.0`. The CLI, the config
+format and the data file format may still change before `1.0.0`. See [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Install
 
